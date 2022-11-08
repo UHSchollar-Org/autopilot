@@ -5,5 +5,3 @@ def same_items(list1, list2):
         if item not in list2:
             return False
     return True
-
-

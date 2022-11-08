@@ -3,6 +3,7 @@ from traffic_signs import *
 import matplotlib.pyplot as plt
 import env_tools as tl
 
+
 ## Añadir en el contructor de interseccion el sort a la lista de calles conectadas
 ## Hay que hacerlo también luego de añadir una calle, a las intersecciones que toque
 class intersection:
@@ -18,7 +19,8 @@ class intersection:
     def __eq__(self, other) -> bool:
         return tl.same_items(self.connected_streets, other.connected_streets)
     
-    def __hash__(self) -> int:## hay que ver si es mejor calcular el hash cuando se crea el objeto para hacerlo solo una vez
+    ## hay que ver si es mejor calcular el hash cuando se crea el objeto para hacerlo solo una vez
+    def __hash__(self) -> int:
         to_hash = ""
         for s in self.connected_streets:
             to_hash += s
@@ -26,29 +28,6 @@ class intersection:
     
     def __str__(self) -> str:
         return self.name
-
-""""
-class street:    
-    def __init__(self, inter1, inter2, name, size, signs) -> None:
-        self.inter1 = inter1
-        self.inter2 = inter2
-        self.name = name
-        self.size = size
-        self.signs = signs
-        
-
-class map:
-    def __init__(self) -> None:
-        self.intersections = list()
-        self.streets = dict()
-    
-    def add_street(self, street):
-        pass
-    
-    def get_adj_inter(self, inter):
-        pass
-"""
-
 
 """ Implementación utilizando networkx"""
 class map:
@@ -71,28 +50,10 @@ class map:
                     
             self.simple_map.add_edge(*joined_intersections, name = st_name, length = st_len, signs = st_signs)
     
-    def print_street(self):
-        names = []
-        for u,v,name in map1.simple_map.edges(data= "name"):
-            if not names.__contains__(name):
-                names.append(name)
-        names.sort()
-        print(names)
-                
     def add_sign_to_street(self, inter1, inter2, sign):
         for u,v,signs in self.simple_map.edges(data= signs):
             if u == inter1 and v == inter2:
                 signs.append(sign)
-    
-    def print_signs(self):
-        for n, nbrsdict in self.simple_map.adjacency():
-            for nbr, eattr in nbrsdict.items():
-                to_print = ""
-                to_print += str(n) + " -> " + str(nbr) + " : "
-                
-                for s in eattr.get("signs"):
-                    to_print += (str(s) + ",")
-                print(to_print)
                     
     def remove_street(self, street):
         pass
@@ -167,5 +128,8 @@ map1.add_street("E", 100, [], (intersection(["E","23"]), intersection(["E","25"]
 map1.add_street("F", 100, [], (intersection(["F","25"]), intersection(["F","23"])))
 map1.add_street("F", 100, [], (intersection(["F","23"]), intersection(["F","21"])))
 
-#map1.print_signs()
-map1.print_street()
+map1.print_signs()
+#map1.print_street()
+nx.draw_networkx(map1.simple_map, with_labels=True)
+plt.axis('equal')
+plt.show()
