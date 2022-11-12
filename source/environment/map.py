@@ -1,15 +1,15 @@
 import networkx as nx
-from traffic_signs import *
-import matplotlib.pyplot as plt
-import env_tools as tl
+from .traffic_signs import *
+import tools.general_tools as tl
 
 
 ## Añadir en el contructor de interseccion el sort a la lista de calles conectadas
 ## Hay que hacerlo también luego de añadir una calle, a las intersecciones que toque
 class intersection:
     
-    def __init__(self, connected_streets) -> None:
+    def __init__(self, connected_streets, geo_coord) -> None:
         self.connected_streets = connected_streets
+        self.geo = geo_coord
         self.name = ""
         
         for i in range(len(connected_streets)-1):
@@ -35,8 +35,10 @@ class map:
     def __init__(self, map_name) -> None:
         self.simple_map = nx.DiGraph(name = map_name)
         
-    def add_street(self, st_name, st_len, st_signs, joined_intersections):
+    def add_street(self, st_signs, joined_intersections):
         if not self.simple_map.has_edge(*joined_intersections):
+            st_name = tl.common_item(joined_intersections[0].connected_streets, joined_intersections[1].connected_streets)
+            st_len = tl.distance_from_geo_coord(*joined_intersections[0].geo, *joined_intersections[1].geo)
             for u  in self.simple_map.nodes:
                 if not u.connected_streets.__contains__(st_name):
                     if u == joined_intersections[0]:
@@ -60,76 +62,3 @@ class map:
     
     def remove_sign_from_street(self, street, sign):
         pass
-    
-    
-map1 = map("mapa1")
-
-map1.add_street("Paseo", 100, [], (intersection(["Paseo","21"]), intersection(["Paseo","23"])))
-map1.add_street("Paseo", 100, [], (intersection(["Paseo","23"]), intersection(["Paseo","21"])))
-map1.add_street("Paseo", 100, [], (intersection(["Paseo","23"]), intersection(["Paseo","21"])))
-map1.add_street("Paseo", 100, [], (intersection(["Paseo","25"]), intersection(["Paseo","23"])))
-
-map1.add_street("21", 100, [], (intersection(["Paseo","21"]), intersection(["A","21"])))
-map1.add_street("21", 100, [], (intersection(["A","21"]), intersection(["B","21"])))
-map1.add_street("21", 100, [], (intersection(["B","21"]), intersection(["C","21"])))
-map1.add_street("21", 100, [], (intersection(["C","21"]), intersection(["D","21"])))
-map1.add_street("21", 100, [], (intersection(["D","21"]), intersection(["E","21"])))
-map1.add_street("21", 100, [], (intersection(["E","21"]), intersection(["F","21"])))
-map1.add_street("21", 100, [], (intersection(["F","21"]), intersection(["G","21"])))
-
-map1.add_street("23", 100, [], (intersection(["Paseo","23"]), intersection(["A","23"])))
-map1.add_street("23", 100, [], (intersection(["A","23"]), intersection(["Paseo","23"])))
-map1.add_street("23", 100, [], (intersection(["A","23"]), intersection(["B","23"])))
-map1.add_street("23", 100, [], (intersection(["B","23"]), intersection(["A","23"])))
-map1.add_street("23", 100, [], (intersection(["B","23"]), intersection(["C","23"])))
-map1.add_street("23", 100, [], (intersection(["C","23"]), intersection(["B","23"])))
-map1.add_street("23", 100, [], (intersection(["C","23"]), intersection(["D","23"])))
-map1.add_street("23", 100, [], (intersection(["D","23"]), intersection(["C","23"])))
-map1.add_street("23", 100, [], (intersection(["D","23"]), intersection(["E","23"])))
-map1.add_street("23", 100, [], (intersection(["E","23"]), intersection(["D","23"])))
-map1.add_street("23", 100, [], (intersection(["E","23"]), intersection(["F","23"])))
-map1.add_street("23", 100, [], (intersection(["F","23"]), intersection(["E","23"])))
-map1.add_street("23", 100, [], (intersection(["F","23"]), intersection(["G","23"])))
-map1.add_street("23", 100, [], (intersection(["G","23"]), intersection(["F","23"])))
-
-map1.add_street("25", 100, [], (intersection(["G","25"]), intersection(["F","25"])))
-map1.add_street("25", 100, [], (intersection(["F","25"]), intersection(["E","25"])))
-map1.add_street("25", 100, [], (intersection(["E","25"]), intersection(["D","25"])))
-map1.add_street("25", 100, [], (intersection(["D","25"]), intersection(["C","25"])))
-map1.add_street("25", 100, [], (intersection(["C","25"]), intersection(["B","25"])))
-map1.add_street("25", 100, [], (intersection(["B","25"]), intersection(["A","25"])))
-map1.add_street("25", 100, [], (intersection(["A","25"]), intersection(["Paseo","25"])))
-
-map1.add_street("G", 100, [], (intersection(["G","25"]), intersection(["G","23"])))
-map1.add_street("G", 100, [], (intersection(["G","23"]), intersection(["G","25"])))
-map1.add_street("G", 100, [], (intersection(["G","23"]), intersection(["G","21"])))
-map1.add_street("G", 100, [], (intersection(["G","21"]), intersection(["G","23"])))
-map1.add_street("G", 100, [], (intersection(["G","21"]), intersection(["G","19"])))
-map1.add_street("G", 100, [], (intersection(["G","19"]), intersection(["G","21"])))
-
-map1.add_street("19", 100, [], (intersection(["G","19"]), intersection(["E","19"])))
-
-map1.add_street("A", 100, [], (intersection(["A","21"]), intersection(["A","23"])))
-map1.add_street("A", 100, [], (intersection(["A","23"]), intersection(["A","25"])))
-
-map1.add_street("B", 100, [], (intersection(["B","25"]), intersection(["B","23"])))
-map1.add_street("B", 100, [], (intersection(["B","23"]), intersection(["B","21"])))
-
-map1.add_street("C", 100, [], (intersection(["C","21"]), intersection(["C","23"])))
-map1.add_street("C", 100, [], (intersection(["C","23"]), intersection(["C","25"])))
-
-map1.add_street("D", 100, [], (intersection(["D","25"]), intersection(["D","23"])))
-map1.add_street("D", 100, [], (intersection(["D","23"]), intersection(["D","21"])))
-
-map1.add_street("E", 100, [], (intersection(["E","19"]), intersection(["E","21"])))
-map1.add_street("E", 100, [], (intersection(["E","21"]), intersection(["E","23"])))
-map1.add_street("E", 100, [], (intersection(["E","23"]), intersection(["E","25"])))
-
-map1.add_street("F", 100, [], (intersection(["F","25"]), intersection(["F","23"])))
-map1.add_street("F", 100, [], (intersection(["F","23"]), intersection(["F","21"])))
-
-map1.print_signs()
-#map1.print_street()
-nx.draw_networkx(map1.simple_map, with_labels=True)
-plt.axis('equal')
-plt.show()
