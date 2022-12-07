@@ -1,11 +1,8 @@
-from environment.map import *
-from environment.console_printer import print_signs, print_streets, print_street_len
-from car.car import *
-import tools.reader as rd
-<<<<<<< Updated upstream
-=======
+from source.environment.map import *
+from source.environment.console_printer import print_signs, print_streets, print_street_len
+from source.car.car import *
+import source.tools.reader as rd
 import networkx as nx
->>>>>>> Stashed changes
 
 map1 = rd.map_from_json("Vedado")
 """
@@ -138,11 +135,8 @@ map1.add_street([], (intersection(["E","23"]), intersection(["E","25"])))
 map1.add_street([], (intersection(["F","25"]), intersection(["F","23"])))
 map1.add_street([], (intersection(["F","23"]), intersection(["F","21"])))"""
 
-<<<<<<< Updated upstream
-=======
 nx.write_gexf(map1.simple_map, 'map.gexf')
 
->>>>>>> Stashed changes
 print_signs(map1)
 print_streets(map1)
 print_street_len(map1)
