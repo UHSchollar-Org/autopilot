@@ -1,6 +1,6 @@
 import pathlib as pl
 import json
-from environment.map import *
+from source.environment.map import *
 
 def back_path(path: str, steps):
     for i in range(path.__len__()-1 , -1, -1):
