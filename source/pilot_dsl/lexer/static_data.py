@@ -1,4 +1,5 @@
 from enum import Enum, auto, unique
+from typing import Dict
 
 @unique
 class token_type(Enum):
@@ -14,11 +15,12 @@ class token_type(Enum):
     SEMICOLON = auto(),
     SLASH = auto(),
     ASTERISK = auto(),
+    REMAINDER = auto(),
     #endregion
     
     #region One or two character tokens.
-    BANG = auto(),
-    BANG_EQUAL = auto(),
+    NOT = auto(),
+    NOT_EQUAL = auto(),
     EQUAL = auto(),
     EQUAL_EQUAL = auto(),
     GREATER = auto(),
@@ -48,17 +50,26 @@ class token_type(Enum):
     FALSE = auto(),
     VAR = auto(),
     WHILE = auto(),
+    CLASS = auto(),
+    FATHER = auto(),
     #endregion
     
     EOF = auto()
-    
-class token:
-    def __init__(self, token_type, lexeme, literal, line) -> None:
-        self.type = token_type
-        self.lexeme = lexeme
-        self.literal = literal
-        self.line = line
-    
-    def __str__(self) -> str:
-        return f'{self.type} {self.lexeme} {self.literal}'
 
+keywords_map : Dict[str, token_type] = {
+    'and': token_type.AND,
+    'if' : token_type.IF,
+    'else': token_type.ELSE,
+    'fun' : token_type.FUN,
+    'for' : token_type.FOR,
+    'null' : token_type.NULL,
+    'or' : token_type.OR,
+    'print' : token_type.PRINT,
+    'return' : token_type.RETURN,
+    'this' : token_type.THIS,
+    'true' : token_type.TRUE,
+    'false' : token_type.FALSE,
+    'var' : token_type.VAR,
+    'while' : token_type.WHILE,
+    'class' : token_type.CLASS,
+    'father' : token_type.FATHER }
