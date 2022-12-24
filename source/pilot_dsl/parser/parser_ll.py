@@ -6,6 +6,12 @@ from source.pilot_dsl.errors.error import *
 
 """Grammar:
 
+    program     ->  statement* EOF
+    
+    statement   ->  exp_stmt | print_stmt
+    
+    exp_stmt    -> expression ";"
+    
     expression  ->  equality
     equality    ->  comparison (( "!=" | "==" ) comparison)*
     comparison  ->  term (( ">" | ">=" | "<" | "<=" ) term)*
@@ -14,6 +20,7 @@ from source.pilot_dsl.errors.error import *
     unary       ->  ( "!" | "-" ) unary | primary
     primary     ->  Number | String | "true" | "false" | "null" | "(" expression ")"  
     
+    print_stmt  ->  "print" expression ";"
 """
 
 class parser_ll:
