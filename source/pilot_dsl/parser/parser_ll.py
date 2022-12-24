@@ -2,6 +2,7 @@ from typing import List
 from source.pilot_dsl.lexer.token_ import token
 from source.pilot_dsl.lexer.static_data import token_type
 from source.pilot_dsl.ast.expressions import *
+from source.pilot_dsl.errors.error import *
 
 """Grammar:
 
@@ -16,8 +17,9 @@ from source.pilot_dsl.ast.expressions import *
 """
 
 class parser_ll:
-    def __init__(self, tokens : List[token]) -> None:
+    def __init__(self, tokens : List[token], on_token_error = None) -> None:
         self.tokens = tokens
+        self.on_token_error = on_token_error
         self.current = 0
     
     def prev(self) -> token:
@@ -114,8 +116,45 @@ class parser_ll:
         
         if self.match(token_type.LEFT_PAREN):
             exp : expression = self._expression()
-            self.consume(token_type.RIGHT_PAREN, "Error message")
+            self.consume(token_type.RIGHT_PAREN, "Expect ')' after expression.") #here we find an parsing error
             return grouping_exp(exp)
+        
+        raise self._error(self.peek(), "Expect expression.")
     
     def consume(self, token_type, error_msg):
-        pass
+        if self.check(token_type):
+            return self.advance()
+        
+        self._error(self.peek(), error_msg) ## here we find an parsing error
+    
+    def _error(self, token : token, msg : str):
+        self.on_token_error(token, msg)
+        raise parse_error(token, msg)
+    
+    def synchronize(self):
+        self.advance()
+        
+        while not self.is_at_end():
+            if self.prev().type == token_type.SEMICOLON:
+                return
+            
+            if self.peek().type in [
+                token_type.CLASS,
+                token_type.FUN,
+                token_type.VAR,
+                token_type.FOR,
+                token_type.IF,
+                token_type.WHILE,
+                token_type.PRINT,
+                token_type.RETURN
+            ]:
+                return
+            
+            self.advance()
+    
+    def parse(self):
+        
+        try:
+            return self._expression()
+        except parse_error:
+            return None
