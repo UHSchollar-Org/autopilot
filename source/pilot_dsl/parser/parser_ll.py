@@ -92,7 +92,7 @@ class parser_ll:
         return self._assignment()
     
     def _assignment(self) -> expression:
-        exp = self._equality()
+        exp = self._or()
         
         if self.match(token_type.EQUAL):
             equals : token = self.prev()
@@ -103,6 +103,26 @@ class parser_ll:
                 return assign_exp(name, value)
             
             self._error(equals, "Invalid assignment target.")
+        
+        return exp
+    
+    def _or(self) -> expression:
+        exp = self._and()
+        
+        while self.match(token_type.OR):
+            op : token = self.prev()
+            right : expression = self._and()
+            exp = logical_exp(exp, right, op)
+        
+        return exp
+    
+    def _and(self) -> expression:
+        exp = self._equality()
+        
+        while self.match(token_type.AND):
+            op : token = self.prev()
+            right : expression = self._equality()
+            exp = logical_exp(exp, right, op)
         
         return exp
     

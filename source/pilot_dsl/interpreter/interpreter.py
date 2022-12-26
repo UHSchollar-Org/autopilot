@@ -147,6 +147,17 @@ class interpreter(exp_visitor, stmt_visitor):
     def visit_var_exp(self, exp: var_exp):
         return self.namespace.get(exp.name)
     
+    def visit_logical_exp(self, exp: logical_exp):
+        left = self.evaluate(exp.left_exp)
+        
+        if exp.operator.type == token_type.OR:
+            if self.is_truthy(left):
+                return left
+        elif not self.is_truthy(left):
+            return left
+        
+        return self.evaluate(exp.right_exp)
+    
     #endregion
     
     #region statements_visit
