@@ -198,6 +198,10 @@ class interpreter(exp_visitor, stmt_visitor):
         elif stmt.else_branch is not None:
             self.execute(stmt.else_branch)
     
+    def visit_while_stmt(self, stmt: while_stmt):
+        while self.is_truthy(self.evaluate(stmt.condition)):
+            self.execute(stmt.body)
+    
     #endregion
     
     def interpret(self, statements : List[statement], on_error = None) -> Any:

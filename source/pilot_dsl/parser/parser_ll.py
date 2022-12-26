@@ -68,6 +68,9 @@ class parser_ll:
         if self.match(token_type.IF):
             return self._if_stmt()
         
+        if self.match(token_type.WHILE):
+            return self._while_stmt()
+        
         return self._expression_stmt()
     
     def _print_stmt(self) -> statement:
@@ -102,6 +105,14 @@ class parser_ll:
             else_branch = self._statement()
         
         return if_stmt(condition, then_branch, else_branch)
+    
+    def _while_stmt(self) -> statement:
+        self.consume(token_type.LEFT_PAREN, "Expect '(' after 'while'.")
+        condition : expression = self._expression()
+        self.consume(token_type.RIGHT_PAREN, "Expect ')' after while condition.")
+        body = self._statement()
+        
+        return while_stmt(condition, body)
     
     #endregion
     
