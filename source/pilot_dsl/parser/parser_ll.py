@@ -15,11 +15,13 @@ from source.pilot_dsl.ast.statements import *
     varDecl     ->  "var" IDENTIFIER ("=" expression )? ";"
     
     statement   ->  exp_stmt 
+                    | for_stmt
                     | if_stmt 
                     | print_stmt
                     | while_stmt 
                     | block
     
+    for_stmt    ->  "for" "(" ( varDecl | exp_stmt | ";" ) expression? ";" expression? ")" statement
     while_stmt  ->  "while" "(" expression ")" statement                    
     if_stmt     ->  "if" "(" expression ")" statement ("else" statement)?
     block       ->  "{" declaration* "}"
