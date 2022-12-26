@@ -66,6 +66,16 @@ class interpreter(exp_visitor, stmt_visitor):
     def execute(self, stmt : statement):
         return stmt.validate(self)
     
+    def exec_block(self, statements : List[statement], scope : scope):
+        previous_scope = self.scope
+        try:
+            self.scope = scope
+            
+            for stmt in statements:
+                self.execute(stmt)
+        finally:
+            self.scope = previous_scope
+    
     #endregion
     
     #region expressions_visit
@@ -167,6 +177,9 @@ class interpreter(exp_visitor, stmt_visitor):
             self.globals.assign(exp.name, value)
         
         return value
+    
+    def visit_block_stmt(self, stmt: block_stmt):
+        self.exec_block(self, stmt.statements, scope(self.scope))
     
     #endregion
     

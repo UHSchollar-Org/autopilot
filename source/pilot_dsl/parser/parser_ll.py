@@ -38,6 +38,15 @@ class parser_ll:
     
     #region statements
     
+    def _statement(self) -> statement:
+        if self.match(token_type.PRINT):
+            return self._print_stmt()
+        
+        if self.match(token_type.LEFT_BRACE):
+            return block_stmt(self._block())
+        
+        return self._expression_stmt()
+    
     def _print_stmt(self) -> statement:
         value = self._expression()
         self.consume(token_type.SEMICOLON, f'Expect ; after {str(value)}')
@@ -47,6 +56,16 @@ class parser_ll:
         exp = self._expression()
         self.consume(token_type.SEMICOLON, f'Exprect ; after {exp}')
         return expression_stmt(exp)
+    
+    def _block(self) -> List[statement]:
+        statements = []
+        
+        while not self.check(token_type.RIGHT_BRACE) and not self.is_at_end():
+            statements.append(self.declaration())
+        
+        self.consume(token_type.RIGHT_BRACE, "Expect '}' after block.")
+        
+        return statements
     
     #endregion
     
