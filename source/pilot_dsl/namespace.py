@@ -3,8 +3,8 @@ from typing import Any, Dict, Optional
 from .lexer.token_ import token
 from .errors.error import runtime_error
 
-class namespace:
-    def __init__(self, enclosing : Optional[namespace] = None) -> None:
+class scope:
+    def __init__(self, enclosing : Optional[scope] = None) -> None:
         self.values : Dict[str, Any] = {}
         self.enclosing = enclosing
     
