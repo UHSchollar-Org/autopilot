@@ -181,6 +181,12 @@ class interpreter(exp_visitor, stmt_visitor):
     def visit_block_stmt(self, stmt: block_stmt):
         self.exec_block(self, stmt.statements, scope(self.scope))
     
+    def visit_if_stmt(self, stmt: if_stmt):
+        if self.is_truthy(self.evaluate(stmt.condition)):
+            self.execute(stmt.then_branch)
+        elif stmt.else_branch is not None:
+            self.execute(stmt.else_branch)
+    
     #endregion
     
     def interpret(self, statements : List[statement], on_error = None) -> Any:

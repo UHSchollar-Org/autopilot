@@ -44,6 +44,9 @@ class parser_ll:
         if self.match(token_type.LEFT_BRACE):
             return block_stmt(self._block())
         
+        if self.match(token_type.IF):
+            return self._if_stmt()
+        
         return self._expression_stmt()
     
     def _print_stmt(self) -> statement:
@@ -65,6 +68,19 @@ class parser_ll:
         self.consume(token_type.RIGHT_BRACE, "Expect '}' after block.")
         
         return statements
+    
+    def _if_stmt(self) -> statement:
+        self.consume(token_type.LEFT_PAREN, "Expect '(' after 'if'.")
+        condition : expression = self._expression()
+        self.consume(token_type.RIGHT_PAREN, "Expect ')' after if condition.")
+        
+        then_branch = self._statement()
+        else_branch = None
+        
+        if self.match(token_type.ELSE):
+            else_branch = self._statement()
+        
+        return if_stmt(condition, then_branch, else_branch)
     
     #endregion
     
