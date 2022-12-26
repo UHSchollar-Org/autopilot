@@ -21,3 +21,17 @@ class namespace:
             return self.enclosing.get(name)
         
         raise runtime_error(name, f'Undefined variable \'{name.lexeme}\'.')
+    
+    def assign(self, name : token, value : Any):
+        if name.lexeme in self.values.keys():
+            self.values[name.lexeme] = value
+            return
+        
+        if self.enclosing:
+            self.enclosing.assign(name, value)
+            return
+        
+        raise runtime_error(name, f'Undefined variable \'{name.lexeme}\'.')
+    
+    def assign_at(self, distance : int, name : token, value : Any):
+        pass

@@ -34,10 +34,39 @@ class parser_ll:
         self.on_token_error = on_token_error
         self.current = 0
     
+    #region statements
+    
+    def _print_stmt(self) -> statement:
+        value = self._expression()
+        self.consume(token_type.SEMICOLON, f'Expect ; after {str(value)}')
+        return print_stmt(value)
+    
+    def _expression_stmt(self) -> statement:
+        exp = self._expression()
+        self.consume(token_type.SEMICOLON, f'Exprect ; after {exp}')
+        return expression_stmt(exp)
+    
+    #endregion
+    
     #region expressions
     
     def _expression(self) -> expression:
-        return self._equality()
+        return self._assignment()
+    
+    def _assignment(self) -> expression:
+        exp = self._equality()
+        
+        if self.match(token_type.EQUAL):
+            equals : token = self.prev()
+            value : expression = self._assignment()
+            
+            if isinstance(exp, var_exp):
+                name : token = exp.name
+                return assign_exp(name, value)
+            
+            self._error(equals, "Invalid assignment target.")
+        
+        return exp
     
     def _equality(self) -> expression:
         exp = self._comparison()
@@ -109,20 +138,6 @@ class parser_ll:
             return var_exp(self.prev())
         
         raise self._error(self.peek(), "Expect expression.")
-    
-    #endregion
-    
-    #region statements
-    
-    def _print_stmt(self) -> statement:
-        value = self._expression()
-        self.consume(token_type.SEMICOLON, f'Expect ; after {str(value)}')
-        return print_stmt(value)
-    
-    def _expression_stmt(self) -> statement:
-        exp = self._expression()
-        self.consume(token_type.SEMICOLON, f'Exprect ; after {exp}')
-        return expression_stmt(exp)
     
     #endregion
     

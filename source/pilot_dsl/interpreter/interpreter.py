@@ -156,6 +156,18 @@ class interpreter(exp_visitor, stmt_visitor):
         
         self.namespace.define(stmt.name.lexeme, value)
     
+    def visit_assign_exp(self, exp: assign_exp):
+        value = self.evaluate(exp.value)
+        
+        distance = self.locals.get(exp)
+        
+        if distance:
+            self.namespace.assign_at(distance, exp.name, value)
+        else:
+            self.globals.assign(exp.name, value)
+        
+        return value
+    
     #endregion
     
     def interpret(self, statements : List[statement], on_error = None) -> Any:
