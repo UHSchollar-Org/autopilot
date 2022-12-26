@@ -1,12 +1,16 @@
-from typing import List
+from typing import List, Optional
 from source.pilot_dsl.lexer.token_ import token
 from source.pilot_dsl.lexer.static_data import token_type
 from source.pilot_dsl.ast.expressions import *
 from source.pilot_dsl.errors.error import *
+from source.pilot_dsl.ast.statements import *
 
 """Grammar:
 
     program     ->  statement* EOF
+    
+    declaration ->  varDecl | statement
+    varDecl     ->  "var" IDENTIFIER ("=" expression )? ";"
     
     statement   ->  exp_stmt | print_stmt
     
@@ -18,7 +22,7 @@ from source.pilot_dsl.errors.error import *
     term        ->  factor (( "-" | "+" ) factor)*
     factor      ->  unary (( "/" | "*" ) unary)*
     unary       ->  ( "!" | "-" ) unary | primary
-    primary     ->  Number | String | "true" | "false" | "null" | "(" expression ")"  
+    primary     ->  Number | String | "true" | "false" | "null" | "(" expression ")" | IDENTIFIER
     
     print_stmt  ->  "print" expression ";"
 """
@@ -29,33 +33,7 @@ class parser_ll:
         self.on_token_error = on_token_error
         self.current = 0
     
-    def prev(self) -> token:
-        return self.tokens[self.current - 1]
-    
-    def peek(self) -> token:
-        return self.tokens[self.current]
-    
-    def is_at_end(self) -> bool:
-        return self.peek().type == token_type.EOF
-    
-    def advance(self) -> token:
-        if not self.is_at_end():
-            self.current += 1
-        return self.prev()
-    
-    def check(self, type : token_type) -> bool:
-        if self.is_at_end():
-            return False
-        
-        return self.peek().type == type
-    
-    def match(self, *types : token_type) -> bool:
-        for type in types:
-            if self.check(type):
-                self.advance()
-                return True
-        
-        return False
+    #region expressions
     
     def _expression(self) -> expression:
         return self._equality()
@@ -126,7 +104,56 @@ class parser_ll:
             self.consume(token_type.RIGHT_PAREN, "Expect ')' after expression.") #here we find an parsing error
             return grouping_exp(exp)
         
+        if self.match(token_type.IDENTIFIER):
+            return var_exp(self.prev())
+        
         raise self._error(self.peek(), "Expect expression.")
+    
+    #endregion
+    
+    #region statements
+    
+    def _print_stmt(self) -> statement:
+        value = self._expression()
+        self.consume(token_type.SEMICOLON, f'Expect ; after {str(value)}')
+        return print_stmt(value)
+    
+    def _expression_stmt(self) -> statement:
+        exp = self._expression()
+        self.consume(token_type.SEMICOLON, f'Exprect ; after {exp}')
+        return expression_stmt(exp)
+    
+    #endregion
+    
+    #region other methods
+    
+    def prev(self) -> token:
+        return self.tokens[self.current - 1]
+    
+    def peek(self) -> token:
+        return self.tokens[self.current]
+    
+    def is_at_end(self) -> bool:
+        return self.peek().type == token_type.EOF
+    
+    def advance(self) -> token:
+        if not self.is_at_end():
+            self.current += 1
+        return self.prev()
+    
+    def check(self, type : token_type) -> bool:
+        if self.is_at_end():
+            return False
+        
+        return self.peek().type == type
+    
+    def match(self, *types : token_type) -> bool:
+        for type in types:
+            if self.check(type):
+                self.advance()
+                return True
+        
+        return False
     
     def consume(self, token_type, error_msg):
         if self.check(token_type):
@@ -159,9 +186,41 @@ class parser_ll:
             
             self.advance()
     
-    def parse(self):
+    def var_declaration(self) -> statement:
+        name = self.consume(token_type.IDENTIFIER, "Expect variable name.")
         
+        init = None
+        
+        if self.match(token_type.EQUAL):
+            init = self._expression()
+        
+        self.consume(token_type.SEMICOLON, "Expect ';' after variable declaration.")
+        
+        return var_stmt(name, init)
+        
+    def declaration(self) -> Optional[statement]:
         try:
-            return self._expression()
-        except parse_error:
+            if self.match(token_type.CLASS):
+                pass
+            if self.match(token_type.FUN):
+                pass
+            if self.match(token_type.VAR):
+                return self.var_declaration()
+            
             return None
+        except parse_error:
+            self.synchronize()
+            return None
+            
+    
+    #endregion    
+    
+    def parse(self) -> List[statement]:
+        statements : List[statement] = []
+        
+        while not self.is_at_end():
+            if decl := self.declaration():
+                statements.append(decl)
+        
+        return statements
+        

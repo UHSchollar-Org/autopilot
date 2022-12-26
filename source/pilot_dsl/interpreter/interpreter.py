@@ -1,16 +1,20 @@
-
+from typing import List, Any
 from source.pilot_dsl.ast.expressions import *
 from source.pilot_dsl.lexer.token_ import *
 from source.pilot_dsl.lexer.static_data import token_type
 from source.pilot_dsl.errors.error import runtime_error
+from source.pilot_dsl.ast.statements import *
 
-class interpreter(exp_visitor):
+class interpreter(exp_visitor, stmt_visitor):
     
     def __init__(self) -> None:
         super().__init__()
     
-    def evaluate(self, exp : expression):
-        return exp.validate(self)
+    
+    
+    
+    
+    #region others_methods
     
     @staticmethod
     def is_truthy(obj):
@@ -59,6 +63,16 @@ class interpreter(exp_visitor):
             return f'{obj:0.6f}'.rstrip('0').rstrip('.')
         
         return str(obj)
+    
+    def execute(self, stmt : statement):
+        return stmt.validate(self)
+    
+    #endregion
+    
+    #region expressions_visit
+    
+    def evaluate(self, exp : expression):
+        return exp.validate(self)
     
     def visit_literal(self, exp: literal_exp):
         return exp.value
@@ -121,16 +135,26 @@ class interpreter(exp_visitor):
             
         return None
     
-    def interpret(self, exp : expression):
-        try:
-            value = self.evaluate(exp)
-            print(self.stringify(value))
-        except runtime_error as e:
-            print(e.message)
-            print(f'line {e.token.line} column {e.token.column}')
-            return False
-        return True
-                    
-        
-        
+    #endregion
     
+    #region statements_visit
+    
+    def visit_expression(self, stmt: expression_stmt):
+        return self.evaluate(stmt.expression)
+    
+    def visit_print(self, stmt: print_stmt):
+        value = self.evaluate(stmt.expression)
+        print(self.stringify(value))
+    
+    #endregion
+    
+    def interpret(self, statements : List[statement], on_error = None) -> Any:
+        try:
+            res = None
+            for stmt in statements:
+                res = self.execute(stmt)
+            
+            #return res #for testing and debugging
+        except runtime_error as run_error:
+            on_error(run_error)
+                
