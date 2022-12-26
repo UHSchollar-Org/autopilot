@@ -4,16 +4,15 @@ from source.pilot_dsl.lexer.token_ import *
 from source.pilot_dsl.lexer.static_data import token_type
 from source.pilot_dsl.errors.error import runtime_error
 from source.pilot_dsl.ast.statements import *
+from source.pilot_dsl.namespace import namespace
 
 class interpreter(exp_visitor, stmt_visitor):
     
     def __init__(self) -> None:
-        super().__init__()
-    
-    
-    
-    
-    
+        self.globals = namespace()
+        self.namespace = self.globals
+        self.locals = {}
+        
     #region others_methods
     
     @staticmethod
@@ -74,13 +73,13 @@ class interpreter(exp_visitor, stmt_visitor):
     def evaluate(self, exp : expression):
         return exp.validate(self)
     
-    def visit_literal(self, exp: literal_exp):
+    def visit_literal_exp(self, exp: literal_exp):
         return exp.value
     
-    def visit_grouping(self, exp: grouping_exp):
+    def visit_grouping_exp(self, exp: grouping_exp):
         return self.evaluate(exp.exp)
     
-    def visit_unary(self, exp: unary_exp):
+    def visit_unary_exp(self, exp: unary_exp):
         right = self.evaluate(exp.exp)
         
         t_type = exp.operator.type
@@ -95,7 +94,7 @@ class interpreter(exp_visitor, stmt_visitor):
         
         return None
     
-    def visit_binary(self, exp: binary_exp):
+    def visit_binary_exp(self, exp: binary_exp):
         left = self.evaluate(exp.left_exp)
         right = self.evaluate(exp.right_exp)
         
@@ -135,16 +134,27 @@ class interpreter(exp_visitor, stmt_visitor):
             
         return None
     
+    def visit_var_exp(self, exp: var_exp):
+        return self.namespace.get(exp.name)
+    
     #endregion
     
     #region statements_visit
     
-    def visit_expression(self, stmt: expression_stmt):
+    def visit_expression_stmt(self, stmt: expression_stmt):
         return self.evaluate(stmt.expression)
     
-    def visit_print(self, stmt: print_stmt):
+    def visit_print_stmt(self, stmt: print_stmt):
         value = self.evaluate(stmt.expression)
         print(self.stringify(value))
+    
+    def visit_var_stmt(self, stmt: var_stmt):
+        value = None
+        
+        if stmt.initializer is not None:
+            value = self.evaluate(stmt.initializer)
+        
+        self.namespace.define(stmt.name.lexeme, value)
     
     #endregion
     
