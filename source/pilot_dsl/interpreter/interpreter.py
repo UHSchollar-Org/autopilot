@@ -4,13 +4,13 @@ from source.pilot_dsl.lexer.token_ import *
 from source.pilot_dsl.lexer.static_data import token_type
 from source.pilot_dsl.errors.error import runtime_error
 from source.pilot_dsl.ast.statements import *
-from source.pilot_dsl.namespace import namespace
+from source.pilot_dsl.namespace import scope
 
 class interpreter(exp_visitor, stmt_visitor):
     
     def __init__(self) -> None:
-        self.globals = namespace()
-        self.namespace = self.globals
+        self.globals = scope()
+        self.scope = self.globals
         self.locals = {}
         
     #region others_methods
@@ -154,7 +154,7 @@ class interpreter(exp_visitor, stmt_visitor):
         if stmt.initializer is not None:
             value = self.evaluate(stmt.initializer)
         
-        self.namespace.define(stmt.name.lexeme, value)
+        self.scope.define(stmt.name.lexeme, value)
     
     def visit_assign_exp(self, exp: assign_exp):
         value = self.evaluate(exp.value)
@@ -162,7 +162,7 @@ class interpreter(exp_visitor, stmt_visitor):
         distance = self.locals.get(exp)
         
         if distance:
-            self.namespace.assign_at(distance, exp.name, value)
+            self.scope.assign_at(distance, exp.name, value)
         else:
             self.globals.assign(exp.name, value)
         
