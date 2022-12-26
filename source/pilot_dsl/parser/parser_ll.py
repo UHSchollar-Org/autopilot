@@ -9,24 +9,43 @@ from source.pilot_dsl.ast.statements import *
 
     program     ->  statement* EOF
     
-    declaration ->  varDecl | statement
+    declaration ->  varDecl 
+                    | statement
+                    
     varDecl     ->  "var" IDENTIFIER ("=" expression )? ";"
     
-    statement   ->  exp_stmt | if_stmt | print_stmt | block
+    statement   ->  exp_stmt 
+                    | if_stmt 
+                    | print_stmt
+                    | while_stmt 
+                    | block
+    
+    while_stmt  ->  "while" "(" expression ")" statement                    
     if_stmt     ->  "if" "(" expression ")" statement ("else" statement)?
     block       ->  "{" declaration* "}"
     exp_stmt    -> expression ";"
     
     expression  ->  assignment
-    assignment  ->  IDENTIFIER "=" assignment | logic_or
+    
+    assignment  ->  IDENTIFIER "=" assignment 
+                    | logic_or
+    
     logic_or    ->  logic_and ( "or" logic_and )*
     logic_and   ->  equality ( "and" equality )*
     equality    ->  comparison (( "!=" | "==" ) comparison)*
     comparison  ->  term (( ">" | ">=" | "<" | "<=" ) term)*
     term        ->  factor (( "-" | "+" ) factor)*
     factor      ->  unary (( "/" | "*" ) unary)*
-    unary       ->  ( "!" | "-" ) unary | primary
-    primary     ->  Number | String | "true" | "false" | "null" | "(" expression ")" | IDENTIFIER
+    unary       ->  ( "!" | "-" ) unary 
+                    | primary
+    
+    primary     ->  Number 
+                    | String 
+                    | "true" 
+                    | "false" 
+                    | "null" 
+                    | "(" expression ")" 
+                    | IDENTIFIER
     
     print_stmt  ->  "print" expression ";"
 """
