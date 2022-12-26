@@ -12,7 +12,9 @@ from source.pilot_dsl.ast.statements import *
     declaration ->  varDecl | statement
     varDecl     ->  "var" IDENTIFIER ("=" expression )? ";"
     
-    statement   ->  exp_stmt | print_stmt
+    statement   ->  exp_stmt | print_stmt | block
+    
+    block       ->  "{" declaration* "}"
     
     exp_stmt    -> expression ";"
     
