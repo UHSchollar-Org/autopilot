@@ -16,7 +16,8 @@ from source.pilot_dsl.ast.statements import *
     
     exp_stmt    -> expression ";"
     
-    expression  ->  equality
+    expression  ->  assignment
+    assignment  ->  IDENTIFIER "=" assignment | equality
     equality    ->  comparison (( "!=" | "==" ) comparison)*
     comparison  ->  term (( ">" | ">=" | "<" | "<=" ) term)*
     term        ->  factor (( "-" | "+" ) factor)*
