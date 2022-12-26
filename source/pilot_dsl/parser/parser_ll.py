@@ -60,6 +60,18 @@ class parser_ll:
     
     #region statements
     
+    def _var_declaration(self) -> statement:
+        name = self.consume(token_type.IDENTIFIER, "Expect variable name.")
+        
+        init = None
+        
+        if self.match(token_type.EQUAL):
+            init = self._expression()
+        
+        self.consume(token_type.SEMICOLON, "Expect ';' after variable declaration.")
+        
+        return var_stmt(name, init)
+    
     def _statement(self) -> statement:
         if self.match(token_type.PRINT):
             return self._print_stmt()
@@ -72,6 +84,9 @@ class parser_ll:
         
         if self.match(token_type.WHILE):
             return self._while_stmt()
+        
+        if self.match(token_type.FOR):
+            return self._for_stmt()
         
         return self._expression_stmt()
     
@@ -116,6 +131,51 @@ class parser_ll:
         
         return while_stmt(condition, body)
     
+    def _for_stmt(self) -> statement:
+        # for_stmt using while_stmt implementation
+        # for (initializer; condition; increment) body
+        
+        self.consume(token_type.LEFT_PAREN, "Expect '(' after 'for'.")
+        
+        # initializer
+        if self.match(token_type.SEMICOLON):
+            initializer = None
+        elif self.match(token_type.VAR):
+            initializer = self._var_declaration()
+        else:
+            initializer = self._expression_stmt()
+            
+        #condition
+        condition = None
+        if not self.check(token_type.SEMICOLON):
+            condition = self._expression()
+        self.consume(token_type.SEMICOLON, "Expect ';' after loop condition.")
+        
+        #increment
+        increment = None
+        if not self.check(token_type.RIGHT_PAREN):
+            increment = self._expression()
+        self.consume(token_type.RIGHT_PAREN, "Expect ')' after for clauses.")
+        
+        body = self._statement()
+        
+        #if increment is not None, execute it after every body call
+        if increment:
+            body = block_stmt([body, expression_stmt(increment)])
+        
+        #if condition is None, set it to True
+        if condition is None:
+            condition = literal_exp(True)
+        
+        #create a while loop with the condition and body
+        body = while_stmt(condition, body)
+        
+        #if initializer is not None, execute it before the while loop
+        if initializer is not None:
+            body = block_stmt([initializer, body])
+        
+        return body
+        
     #endregion
     
     #region expressions
@@ -291,18 +351,6 @@ class parser_ll:
                 return
             
             self.advance()
-    
-    def var_declaration(self) -> statement:
-        name = self.consume(token_type.IDENTIFIER, "Expect variable name.")
-        
-        init = None
-        
-        if self.match(token_type.EQUAL):
-            init = self._expression()
-        
-        self.consume(token_type.SEMICOLON, "Expect ';' after variable declaration.")
-        
-        return var_stmt(name, init)
         
     def declaration(self) -> Optional[statement]:
         try:
@@ -311,7 +359,7 @@ class parser_ll:
             if self.match(token_type.FUN):
                 pass
             if self.match(token_type.VAR):
-                return self.var_declaration()
+                return self._var_declaration()
             
             return None
         except parse_error:
