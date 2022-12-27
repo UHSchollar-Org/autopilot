@@ -1,6 +1,6 @@
 from __future__ import annotations
-from .interpreter import scope
-from .interpreter import pilang_callable
+from source.pilot_dsl.interpreter.namespace import scope
+from .pilang_callable import pilang_callable
 from source.pilot_dsl.ast.statements import function_stmt
 from typing import List, Any
 from source.pilot_dsl.errors.error import return_error

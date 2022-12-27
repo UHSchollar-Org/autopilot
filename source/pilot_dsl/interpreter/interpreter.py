@@ -5,8 +5,8 @@ from source.pilot_dsl.lexer.static_data import token_type
 from source.pilot_dsl.errors.error import runtime_error, return_error
 from source.pilot_dsl.ast.statements import *
 from source.pilot_dsl.interpreter.namespace import scope
-from .pilang_callable import pilang_callable
-from .pilang_func import pilang_func
+from source.pilot_dsl.builtins.pilang_callable import pilang_callable
+from source.pilot_dsl.builtins.pilang_func import pilang_func
 
 class interpreter(exp_visitor, stmt_visitor):
     

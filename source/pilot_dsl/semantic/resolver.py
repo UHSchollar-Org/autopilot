@@ -4,7 +4,7 @@ from source.pilot_dsl.ast.statements import *
 from source.pilot_dsl.interpreter.interpreter import interpreter
 from collections import deque
 from typing import List, Deque, Dict
-from source.pilot_dsl.interpreter.pilang_func import function_type
+from source.pilot_dsl.builtins.pilang_func import function_type
 
 class resolver(stmt_visitor, exp_visitor):
     def __init__(self, interpreter : interpreter, on_error = None) -> None:
