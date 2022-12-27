@@ -7,6 +7,7 @@ from source.pilot_dsl.ast.statements import *
 from source.pilot_dsl.interpreter.namespace import scope
 from source.pilot_dsl.builtins.pilang_callable import pilang_callable
 from source.pilot_dsl.builtins.pilang_func import pilang_func
+from source.pilot_dsl.builtins.pilang_instance import pilang_instance
 
 class interpreter(exp_visitor, stmt_visitor):
     
@@ -195,6 +196,14 @@ class interpreter(exp_visitor, stmt_visitor):
         
         return value
        
+    def visit_get_exp(self, exp: get_exp):
+        obj = self.evaluate(exp.object)
+        
+        if isinstance(obj, pilang_instance):
+            return obj.get(exp.name)
+        
+        raise runtime_error(exp.name, "Only instances have properties.") 
+    
     #endregion
     
     #region statements_visit

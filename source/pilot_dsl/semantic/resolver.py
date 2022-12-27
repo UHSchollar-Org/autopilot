@@ -108,6 +108,9 @@ class resolver(stmt_visitor, exp_visitor):
     def visit_unary_exp(self, exp: unary_exp):
         self.resolve_single_exp(exp.exp)
     
+    def visit_get_exp(self, exp: get_exp):
+        self.resolve_single_exp(exp.object)
+    
     #endregion
     
     #region visit_stmts

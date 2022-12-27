@@ -13,3 +13,14 @@ class pilang_instance:
     
     def __str__(self) -> str:
         return self.__repr__()
+    
+    def get(self, name : token) -> Any:
+        try:
+            return self.fields[name.lexeme]
+        except KeyError:
+            pass
+        
+        raise runtime_error(name, f'Undefined property \'{name.lexeme}\'')
+    
+    def set(self, name : token, value : Any):
+        self.fields[name.lexeme] = value
