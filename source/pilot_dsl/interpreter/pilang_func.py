@@ -4,6 +4,13 @@ from .interpreter import pilang_callable
 from source.pilot_dsl.ast.statements import function_stmt
 from typing import List, Any
 from source.pilot_dsl.errors.error import return_error
+from enum import Enum, auto
+
+class function_type(Enum):
+    NONE = auto()
+    FUNCTION = auto()
+    INITIALIZER = auto()
+    METHOD = auto()
 
 class pilang_func(pilang_callable):
     def __init__(self, declaration : function_stmt, closure : scope, is_init : bool) -> None:

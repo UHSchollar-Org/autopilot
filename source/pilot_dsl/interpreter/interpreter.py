@@ -78,6 +78,16 @@ class interpreter(exp_visitor, stmt_visitor):
         finally:
             self.scope = previous_scope
     
+    def resolve(self, exp : expression, depth : int):
+        self.locals[exp] = depth
+    
+    def look_up_var(self, name : token, exp : expression) -> Any:
+        dist = self.locals.get(exp)
+        if dist is not None:
+            return self.scope.get_at(dist, name.lexeme)
+        else:
+            return self.globals.get(name)
+    
     #endregion
     
     #region expressions_visit
@@ -147,7 +157,7 @@ class interpreter(exp_visitor, stmt_visitor):
         return None
     
     def visit_var_exp(self, exp: var_exp):
-        return self.namespace.get(exp.name)
+        return self.look_up_var(exp.name, exp)
     
     def visit_logical_exp(self, exp: logical_exp):
         left = self.evaluate(exp.left_exp)
@@ -172,6 +182,19 @@ class interpreter(exp_visitor, stmt_visitor):
             raise runtime_error(exp.paren, f'Expected {func.arity()} arguments but got {len(args)}.')
         
         return func.call(self, args)
+   
+    def visit_assign_exp(self, exp: assign_exp):
+        value = self.evaluate(exp.value)
+        
+        distance = self.locals.get(exp)
+        
+        if distance:
+            self.scope.assign_at(distance, exp.name, value)
+        else:
+            self.globals.assign(exp.name, value)
+        
+        return value
+       
     #endregion
     
     #region statements_visit
@@ -190,18 +213,6 @@ class interpreter(exp_visitor, stmt_visitor):
             value = self.evaluate(stmt.initializer)
         
         self.scope.define(stmt.name.lexeme, value)
-    
-    def visit_assign_exp(self, exp: assign_exp):
-        value = self.evaluate(exp.value)
-        
-        distance = self.locals.get(exp)
-        
-        if distance:
-            self.scope.assign_at(distance, exp.name, value)
-        else:
-            self.globals.assign(exp.name, value)
-        
-        return value
     
     def visit_block_stmt(self, stmt: block_stmt):
         self.exec_block(self, stmt.statements, scope(self.scope))

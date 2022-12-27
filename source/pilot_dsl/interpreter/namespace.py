@@ -22,8 +22,19 @@ class scope:
         
         raise runtime_error(name, f'Undefined variable \'{name.lexeme}\'.')
     
+    def ancestor(self, distance : int) -> scope:
+        _scope = self
+        
+        for i in range(distance):
+            _scope = _scope.enclosing
+        
+        return _scope
+    
+    def get_at(self, distance : int, name : str) -> Any:
+        return self.ancestor(distance).values.get(name)
+    
     def assign(self, name : token, value : Any):
-        if name.lexeme in self.values.keys():
+        if name.lexeme in self.values:
             self.values[name.lexeme] = value
             return
         
@@ -34,4 +45,4 @@ class scope:
         raise runtime_error(name, f'Undefined variable \'{name.lexeme}\'.')
     
     def assign_at(self, distance : int, name : token, value : Any):
-        pass
+        self.ancestor(distance).values[name.lexeme] = value
