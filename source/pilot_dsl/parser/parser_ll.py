@@ -67,6 +67,31 @@ class parser_ll:
     
     #region statements
     
+    def _function(self, kind : str) -> function_stmt:
+        name = self.consume(token_type.IDENTIFIER, f'Expect {kind} name.')
+        self.consume(token_type.LEFT_PAREN, f'Expect \'(\' after {kind} name.')
+
+        params = []
+        
+        # if next token es not ')', there are parameters
+        if not self.check(token_type.RIGHT_PAREN):
+            # consume the first param 
+            params.append(self.consume(token_type.IDENTIFIER, 'Expect parameter name.'))
+            
+            # we have more params 
+            while self.match(token_type.COMMA):
+                if len(params) >= 255:
+                    self._error(self.peek(), 'Cannot have more than 255 parameters.')
+                
+                params.append(self.consume(token_type.IDENTIFIER, "Expect parameter name."))
+        
+        self.consume(token_type.RIGHT_PAREN, "Expect ')' after parameters.")
+        
+        # parse the body
+        self.consume(token_type.LEFT_BRACE, f'Expect \'{{\' before {kind} body.')
+        body = self._block()
+        return function_stmt(name, params, body)
+    
     def _var_declaration(self) -> statement:
         name = self.consume(token_type.IDENTIFIER, "Expect variable name.")
         
@@ -395,11 +420,12 @@ class parser_ll:
             if self.match(token_type.CLASS):
                 pass
             if self.match(token_type.FUN):
-                pass
+                return self._function("function")
             if self.match(token_type.VAR):
                 return self._var_declaration()
             
-            return None
+            return self._statement()
+        
         except parse_error:
             self.synchronize()
             return None

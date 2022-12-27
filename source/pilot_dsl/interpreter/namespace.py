@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Any, Dict, Optional
-from .lexer.token_ import token
-from .errors.error import runtime_error
+from source.pilot_dsl.lexer.token_ import token
+from source.pilot_dsl.errors.error import runtime_error
 
 class scope:
     def __init__(self, enclosing : Optional[scope] = None) -> None:

@@ -4,8 +4,9 @@ from source.pilot_dsl.lexer.token_ import *
 from source.pilot_dsl.lexer.static_data import token_type
 from source.pilot_dsl.errors.error import runtime_error
 from source.pilot_dsl.ast.statements import *
-from source.pilot_dsl.namespace import scope
+from source.pilot_dsl.interpreter.namespace import scope
 from .pilang_callable import pilang_callable
+from .pilang_func import pilang_func
 
 class interpreter(exp_visitor, stmt_visitor):
     
@@ -214,6 +215,11 @@ class interpreter(exp_visitor, stmt_visitor):
     def visit_while_stmt(self, stmt: while_stmt):
         while self.is_truthy(self.evaluate(stmt.condition)):
             self.execute(stmt.body)
+    
+    def visit_function_stmt(self, stmt: function_stmt):
+        func = pilang_func(stmt, self.scope, False)
+        
+        self.scope.define(stmt.name.lexeme, func)
     
     #endregion
     
