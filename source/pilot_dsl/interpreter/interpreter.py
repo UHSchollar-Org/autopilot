@@ -2,7 +2,7 @@ from typing import List, Any
 from source.pilot_dsl.ast.expressions import *
 from source.pilot_dsl.lexer.token_ import *
 from source.pilot_dsl.lexer.static_data import token_type
-from source.pilot_dsl.errors.error import runtime_error
+from source.pilot_dsl.errors.error import runtime_error, return_error
 from source.pilot_dsl.ast.statements import *
 from source.pilot_dsl.interpreter.namespace import scope
 from .pilang_callable import pilang_callable
@@ -220,6 +220,14 @@ class interpreter(exp_visitor, stmt_visitor):
         func = pilang_func(stmt, self.scope, False)
         
         self.scope.define(stmt.name.lexeme, func)
+    
+    def visit_return_stmt(self, stmt: return_stmt):
+        value = None
+        
+        if stmt.value:
+            value = self.evaluate(stmt.value)
+        
+        raise return_error(value)
     
     #endregion
     

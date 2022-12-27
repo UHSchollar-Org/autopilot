@@ -10,8 +10,8 @@ from source.pilot_dsl.ast.statements import *
     program     ->  statement* EOF
     
     declaration ->  funDecl
-                    | varDecl 
-                    | statement
+                |   varDecl 
+                |   statement
     
     funDecl     ->  "fun" function
     function    ->  IDENTIFIER "(" parameters? ")" block
@@ -19,22 +19,24 @@ from source.pilot_dsl.ast.statements import *
     varDecl     ->  "var" IDENTIFIER ("=" expression )? ";"
     
     statement   ->  exp_stmt 
-                    | for_stmt
-                    | if_stmt 
-                    | print_stmt
-                    | while_stmt 
-                    | block
+                |   for_stmt
+                |   if_stmt 
+                |   print_stmt
+                |   return_stmt
+                |   while_stmt 
+                |   block
     
     for_stmt    ->  "for" "(" ( varDecl | exp_stmt | ";" ) expression? ";" expression? ")" statement
     while_stmt  ->  "while" "(" expression ")" statement                    
     if_stmt     ->  "if" "(" expression ")" statement ("else" statement)?
+    return_stmt ->  "return" expression? ";"
     block       ->  "{" declaration* "}"
-    exp_stmt    -> expression ";"
+    exp_stmt    ->  expression ";"
     
     expression  ->  assignment
     
     assignment  ->  IDENTIFIER "=" assignment 
-                    | logic_or
+                |   logic_or
     
     logic_or    ->  logic_and ( "or" logic_and )*
     logic_and   ->  equality ( "and" equality )*
@@ -43,18 +45,18 @@ from source.pilot_dsl.ast.statements import *
     term        ->  factor (( "-" | "+" ) factor)*
     factor      ->  unary (( "/" | "*" ) unary)*
     unary       ->  ( "!" | "-" ) unary
-                    | call
+                |   call
     
     call        ->  primary ( "(" arguments? ")" )*
     arguments   ->  expression ( "," expression )*
     
     primary     ->  Number 
-                    | String 
-                    | "true" 
-                    | "false" 
-                    | "null" 
-                    | "(" expression ")" 
-                    | IDENTIFIER
+                |   String 
+                |   "true" 
+                |   "false" 
+                |   "null" 
+                |   "(" expression ")" 
+                |   IDENTIFIER
     
     print_stmt  ->  "print" expression ";"
 """
@@ -119,6 +121,9 @@ class parser_ll:
         
         if self.match(token_type.FOR):
             return self._for_stmt()
+        
+        if self.match(token_type.RETURN):
+            return self._return_stmt()
         
         return self._expression_stmt()
     
@@ -207,7 +212,19 @@ class parser_ll:
             body = block_stmt([initializer, body])
         
         return body
+    
+    def _return_stmt(self) -> statement:
+        keyword = self.prev()
+        value = None
         
+        # if next value is not ; we have a return value
+        if not self.check(token_type.SEMICOLON):
+            value = self._expression()
+        
+        self.consume(token_type.SEMICOLON, "Expect ';' after return value.")
+        
+        return return_stmt(keyword, value)
+    
     #endregion
     
     #region expressions

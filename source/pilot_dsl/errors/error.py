@@ -10,3 +10,8 @@ class runtime_error(Exception):
         self.token = token
         self.message = message
         super().__init__(self.message)
+
+class return_error(runtime_error):
+    def __init__(self, value) -> None:
+        super().__init__(None, None)
+        self.value = value
