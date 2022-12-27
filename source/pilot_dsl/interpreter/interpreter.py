@@ -240,6 +240,11 @@ class interpreter(exp_visitor, stmt_visitor):
         
         raise return_error(value)
     
+    def visit_class_stmt(self, stmt: class_stmt):
+        self.scope.define(stmt.name.lexeme, None)
+        
+        
+    
     #endregion
     
     def interpret(self, statements : List[statement], on_error = None) -> Any:

@@ -227,6 +227,18 @@ class parser_ll:
         
         return return_stmt(keyword, value)
     
+    def _class_declaration(self) -> statement:
+        name = self.consume(token_type.IDENTIFIER, "Expect class name.")
+        
+        self.consume(token_type.LEFT_BRACE, "Expect '{' before class body.")
+        
+        methods = []
+        while not self.check(token_type.RIGHT_BRACE) and not self.is_at_end():
+            methods.append(self._function("method"))
+        
+        self.consume(token_type.RIGHT_BRACE, "Expect '}' after class body.")
+        return class_stmt(name, None, methods)
+    
     #endregion
     
     #region expressions
@@ -437,7 +449,7 @@ class parser_ll:
     def declaration(self) -> Optional[statement]:
         try:
             if self.match(token_type.CLASS):
-                pass
+                return self._class_declaration()
             if self.match(token_type.FUN):
                 return self._function("function")
             if self.match(token_type.VAR):

@@ -158,6 +158,10 @@ class resolver(stmt_visitor, exp_visitor):
         self.resolve_single_exp(stmt.condition)
         self.resolve_single_stmt(stmt.body)
     
+    def visit_class_stmt(self, stmt: class_stmt):
+        self.declare(stmt.name)
+        self.define(stmt.name)
+    
     #endregion
         
     
