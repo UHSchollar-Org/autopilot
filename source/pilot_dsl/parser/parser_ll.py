@@ -38,8 +38,11 @@ from source.pilot_dsl.ast.statements import *
     comparison  ->  term (( ">" | ">=" | "<" | "<=" ) term)*
     term        ->  factor (( "-" | "+" ) factor)*
     factor      ->  unary (( "/" | "*" ) unary)*
-    unary       ->  ( "!" | "-" ) unary 
-                    | primary
+    unary       ->  ( "!" | "-" ) unary
+                    | call
+    
+    call        ->  primary ( "(" arguments? ")" )*
+    arguments   ->  expression ( "," expression )*
     
     primary     ->  Number 
                     | String 
@@ -264,8 +267,39 @@ class parser_ll:
             right : expression = self._unary()
             return unary_exp(op, right)
         
-        return self._primary()
-
+        return self._call()
+    
+    def _finish_call(self, callee : expression) -> expression:
+        args = []
+        # if we don't see the ')' in the next token, we have arguments
+        if not self.check(token_type.RIGHT_PAREN):
+            args.append(self._expression())
+            
+            # if we see a comma, we have more arguments
+            while self.match(token_type.COMMA):
+                if len(args) >= 255:
+                    self._error(self.peek(), "Cannot have more than 255 arguments.")
+                
+                args.append(self._expression())
+        
+        paren = self.consume(token_type.RIGHT_PAREN, "Expect ')' after arguments.")
+        
+        return call_exp(callee, paren, args)
+        
+    def _call(self) -> expression:
+        exp = self._primary()
+        
+        while True:
+            if self.match(token_type.LEFT_PAREN):
+                exp = self._finish_call(exp)
+            elif self.match(token_type.DOT):
+                name = self.consume(token_type.IDENTIFIER, "Expect property name after '.'.")
+                exp = get_exp(exp, name)
+            else:
+                break
+        
+        return exp
+    
     def _primary(self) -> expression:
         if self.match(token_type.FALSE):
             return literal_exp(False)

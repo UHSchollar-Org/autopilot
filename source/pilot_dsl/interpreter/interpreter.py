@@ -5,6 +5,7 @@ from source.pilot_dsl.lexer.static_data import token_type
 from source.pilot_dsl.errors.error import runtime_error
 from source.pilot_dsl.ast.statements import *
 from source.pilot_dsl.namespace import scope
+from .pilang_callable import pilang_callable
 
 class interpreter(exp_visitor, stmt_visitor):
     
@@ -158,6 +159,18 @@ class interpreter(exp_visitor, stmt_visitor):
         
         return self.evaluate(exp.right_exp)
     
+    def visit_call_exp(self, exp: call_exp):
+        func = self.evaluate(exp.callee)
+        
+        args = [self.evaluate(arg) for arg in exp.args]
+        
+        if not isinstance(func, pilang_callable):
+            raise runtime_error(exp.paren, 'Can only call functions and classes.')
+        
+        if len(args) != func.arity():
+            raise runtime_error(exp.paren, f'Expected {func.arity()} arguments but got {len(args)}.')
+        
+        return func.call(self, args)
     #endregion
     
     #region statements_visit
