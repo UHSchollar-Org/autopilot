@@ -15,7 +15,7 @@ class token_type(Enum):
     SEMICOLON = auto(),
     SLASH = auto(),
     ASTERISK = auto(),
-    REMAINDER = auto(),
+    #REMAINDER = auto(),
     #endregion
     
     #region One or two character tokens.
