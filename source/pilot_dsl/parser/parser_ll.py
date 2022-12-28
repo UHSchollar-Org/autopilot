@@ -16,9 +16,11 @@ from source.pilot_dsl.ast.statements import *
     
     classDecl   ->  "class" IDENTIFIER ( "<" IDENTIFIER )? "{" function* "}"
     funDecl     ->  "fun" function
-    function    ->  IDENTIFIER "(" parameters? ")" block
-    parameters  ->  IDENTIFIER ( "," IDENTIFIER )*
     varDecl     ->  "var" IDENTIFIER ("=" expression )? ";"
+    
+    
+    parameters  ->  IDENTIFIER ( "," IDENTIFIER )*
+    function    ->  IDENTIFIER "(" parameters? ")" block
     
     statement   ->  exp_stmt 
                 |   for_stmt
@@ -28,12 +30,13 @@ from source.pilot_dsl.ast.statements import *
                 |   while_stmt 
                 |   block
     
-    for_stmt    ->  "for" "(" ( varDecl | exp_stmt | ";" ) expression? ";" expression? ")" statement
-    while_stmt  ->  "while" "(" expression ")" statement                    
-    if_stmt     ->  "if" "(" expression ")" statement ("else" statement)?
-    return_stmt ->  "return" expression? ";"
-    block       ->  "{" declaration* "}"
     exp_stmt    ->  expression ";"
+    for_stmt    ->  "for" "(" ( varDecl | exp_stmt | ";" ) expression? ";" expression? ")" statement
+    if_stmt     ->  "if" "(" expression ")" statement ("else" statement )?
+    print_stmt  ->  "print" expression ";"
+    return_stmt ->  "return" expression? ";"
+    while_stmt  ->  "while" "(" expression ")" statement                    
+    block       ->  "{" declaration* "}"
     
     expression  ->  assignment
     
@@ -52,17 +55,26 @@ from source.pilot_dsl.ast.statements import *
     call        ->  primary ( "(" arguments? ")" | "." IDENTIFIER )*
     arguments   ->  expression ( "," expression )*
     
-    primary     ->  Number 
-                |   String 
-                |   "true" 
+    primary     ->  "true" 
                 |   "false" 
                 |   "null"
                 |   "this"
-                |   "(" expression ")" 
+                |   Number 
+                |   String 
                 |   IDENTIFIER
+                |   "(" expression ")" 
                 |   "father" "." IDENTIFIER
     
-    print_stmt  ->  "print" expression ";"
+"""
+
+"""Lexical Grammar:
+
+    NUMBER      ->  DIGIT+ ( "." DIGIT+ )?
+    STRING      ->  "\"" <any char except "\"">* "\""
+    IDENTIFIER  ->  ALPHA ( ALPHA | DIGIT )*
+    ALPHA       ->  a-z | A-Z | _
+    DIGIT       ->  0-9
+    
 """
 
 class parser_ll:
