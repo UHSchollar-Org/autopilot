@@ -20,6 +20,10 @@ class pilang_instance:
         except KeyError:
             pass
         
+        method = self._class.find_method(name.lexeme)
+        if method is not None:
+            return method.bind(self)
+        
         raise runtime_error(name, f'Undefined property \'{name.lexeme}\'')
     
     def set(self, name : token, value : Any):

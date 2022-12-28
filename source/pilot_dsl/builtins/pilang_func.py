@@ -5,6 +5,7 @@ from source.pilot_dsl.ast.statements import function_stmt
 from typing import List, Any
 from source.pilot_dsl.errors.error import return_error
 from enum import Enum, auto
+from .pilang_instance import pilang_instance
 
 class function_type(Enum):
     NONE = auto()
@@ -41,3 +42,8 @@ class pilang_func(pilang_callable):
     
     def __str__(self) -> str:
         return f'<fn {self.declaration.name.lexeme}>'
+    
+    def bind(self, instance : pilang_instance) -> pilang_func:
+        _scope = scope(self.closure)
+        _scope.define("this", instance)
+        return pilang_func(self.declaration, _scope, self.is_init)

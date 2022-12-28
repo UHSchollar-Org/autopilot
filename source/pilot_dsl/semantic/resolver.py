@@ -5,6 +5,7 @@ from source.pilot_dsl.interpreter.interpreter import interpreter
 from collections import deque
 from typing import List, Deque, Dict
 from source.pilot_dsl.builtins.pilang_func import function_type
+from source.pilot_dsl.builtins.pilang_class import pilang_class, class_type
 
 class resolver(stmt_visitor, exp_visitor):
     def __init__(self, interpreter : interpreter, on_error = None) -> None:
@@ -12,6 +13,7 @@ class resolver(stmt_visitor, exp_visitor):
         self.scopes : Deque[Dict[str, bool]] = deque()
         self.on_error = on_error
         self.current_func = function_type.NONE
+        self.current_class = class_type.NONE
     
     #region Other Methods
     
@@ -111,6 +113,25 @@ class resolver(stmt_visitor, exp_visitor):
     def visit_get_exp(self, exp: get_exp):
         self.resolve_single_exp(exp.object)
     
+    def visit_set_exp(self, exp: set_exp):
+        self.resolve_single_exp(exp.value)
+        self.resolve_single_exp(exp.object)
+    
+    def visit_father_exp(self, exp: father_exp):
+        if self.current_class == class_type.NONE:
+            self.on_error(exp.keyword, "Can't use 'father' outside of a class.")
+        
+        elif self.current_class != class_type.SUBCLASS:
+            self.on_error(exp.keyword, "Can't use 'father' in a class with no father_class.")
+        
+        self.resolve_local(exp, exp.keyword)
+    
+    def visit_this_exp(self, exp: this_exp):
+        if self.current_class == class_type.NONE:
+            self.on_error(exp.keyword, "Can't use 'this' outside of a class.")
+        
+        self.resolve_local(exp, exp.keyword)
+    
     #endregion
     
     #region visit_stmts
@@ -162,9 +183,39 @@ class resolver(stmt_visitor, exp_visitor):
         self.resolve_single_stmt(stmt.body)
     
     def visit_class_stmt(self, stmt: class_stmt):
+        enclosing_class = self.current_class
+        self.current_class = class_type.CLASS
+        
         self.declare(stmt.name)
         self.define(stmt.name)
-    
+        
+        if stmt.father_class and stmt.name.lexeme == stmt.father_class.name.lexeme:
+            self.on_error(stmt.father_class.name, "A class can't inherit from itself.")
+        
+        if stmt.father_class is not None:
+            self.current_class = class_type.SUBCLASS
+            self.resolve_single_exp(stmt.father_class)
+            self.begin_scope()
+            self.scopes[-1]["father"] = True
+        
+        self.begin_scope()
+        self.scopes[-1]["this"] = True
+        
+        for mtd in stmt.methods:
+            decl = function_type.METHOD
+            
+            if mtd.name.lexeme == "init":
+                decl = function_type.INITIALIZER
+            
+            self.resolve_func(mtd, decl)
+        
+        self.end_scope()
+        
+        if stmt.father_class is not None:
+            self.end_scope()
+        
+        self.current_class = enclosing_class
+        
     #endregion
         
     

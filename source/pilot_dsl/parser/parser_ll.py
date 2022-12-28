@@ -14,7 +14,7 @@ from source.pilot_dsl.ast.statements import *
                 |   varDecl 
                 |   statement
     
-    classDecl   ->  "class" IDENTIFIER "{" function* "}"
+    classDecl   ->  "class" IDENTIFIER ( "<" IDENTIFIER )? "{" function* "}"
     funDecl     ->  "fun" function
     function    ->  IDENTIFIER "(" parameters? ")" block
     parameters  ->  IDENTIFIER ( "," IDENTIFIER )*
@@ -56,9 +56,11 @@ from source.pilot_dsl.ast.statements import *
                 |   String 
                 |   "true" 
                 |   "false" 
-                |   "null" 
+                |   "null"
+                |   "this"
                 |   "(" expression ")" 
                 |   IDENTIFIER
+                |   "father" "." IDENTIFIER
     
     print_stmt  ->  "print" expression ";"
 """
@@ -230,6 +232,11 @@ class parser_ll:
     def _class_declaration(self) -> statement:
         name = self.consume(token_type.IDENTIFIER, "Expect class name.")
         
+        father_class = None
+        if self.match(token_type.LESS):
+            self.consume(token_type.IDENTIFIER, "Expect father_class name.")
+            father_class = var_exp(self.prev())
+        
         self.consume(token_type.LEFT_BRACE, "Expect '{' before class body.")
         
         methods = []
@@ -237,7 +244,7 @@ class parser_ll:
             methods.append(self._function("method"))
         
         self.consume(token_type.RIGHT_BRACE, "Expect '}' after class body.")
-        return class_stmt(name, None, methods)
+        return class_stmt(name, father_class, methods)
     
     #endregion
     
@@ -256,7 +263,9 @@ class parser_ll:
             if isinstance(exp, var_exp):
                 name : token = exp.name
                 return assign_exp(name, value)
-            
+            elif isinstance(exp, get_exp):
+                return set_exp(exp.object, exp.name, value)
+                
             self._error(equals, "Invalid assignment target.")
         
         return exp
@@ -380,6 +389,17 @@ class parser_ll:
         
         if self.match(token_type.IDENTIFIER):
             return var_exp(self.prev())
+        
+        if self.match(token_type.THIS):
+            return this_exp(self.prev())
+        
+        if self.match(token_type.FATHER):
+            keyword = self.prev()
+            self.consume(token_type.DOT, "Expect '.' after 'father'.")
+            
+            mtd = self.consume(token_type.IDENTIFIER, "Expect father_class method name.")
+            
+            return father_exp(keyword, mtd)
         
         raise self._error(self.peek(), "Expect expression.")
     

@@ -2,6 +2,7 @@ from __future__ import annotations
 from enum import Enum, auto
 from .pilang_callable import pilang_callable
 from .pilang_func import pilang_func
+from .pilang_instance import pilang_instance
 from typing import Any, List, Dict, Optional
 
 
@@ -17,7 +18,13 @@ class pilang_class(pilang_callable):
         self.methods = methods
     
     def call(self, interpreter, arguments: List[Any]):
-        return super().call(interpreter, arguments)
+        instance = pilang_instance(self)
+        init = self.find_method("init")
+        
+        if init:
+            init.bind(instance).call(interpreter, arguments)
+        
+        return instance
     
     def arity(self) -> int:
         init = self.find_method("init")
@@ -27,10 +34,18 @@ class pilang_class(pilang_callable):
             return 0
     
     def __repr__(self) -> str:
-        return self.name
+        return f'<class {self.name}>'
     
     def find_method(self, name : str) -> Optional[pilang_func]:
-        pass
+        try:
+            return self.methods[name]
+        except KeyError:
+            pass
+        
+        if self.father_class:
+            return self.father_class.find_method(name)
+
+        return None
     
     def __str__(self) -> str:
-        return f'<class {self.name}>'
+        return self.__repr__()

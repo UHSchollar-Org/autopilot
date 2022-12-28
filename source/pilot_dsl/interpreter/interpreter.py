@@ -1,4 +1,4 @@
-from typing import List, Any
+from typing import List, Any, Dict
 from source.pilot_dsl.ast.expressions import *
 from source.pilot_dsl.lexer.token_ import *
 from source.pilot_dsl.lexer.static_data import token_type
@@ -8,6 +8,7 @@ from source.pilot_dsl.interpreter.namespace import scope
 from source.pilot_dsl.builtins.pilang_callable import pilang_callable
 from source.pilot_dsl.builtins.pilang_func import pilang_func
 from source.pilot_dsl.builtins.pilang_instance import pilang_instance
+from source.pilot_dsl.builtins.pilang_class import pilang_class
 
 class interpreter(exp_visitor, stmt_visitor):
     
@@ -24,6 +25,7 @@ class interpreter(exp_visitor, stmt_visitor):
             return False
         if isinstance(obj, bool):
             return obj
+        #is digit
         return True
     
     @staticmethod
@@ -204,6 +206,32 @@ class interpreter(exp_visitor, stmt_visitor):
         
         raise runtime_error(exp.name, "Only instances have properties.") 
     
+    def visit_set_exp(self, exp: set_exp):
+        obj = self.evaluate(exp.object)
+        
+        if not isinstance(obj, pilang_instance):
+            raise runtime_error(exp.name, "Only instances have fields.")
+        
+        value = self.evaluate(exp.value)
+        obj.set(exp.name, value)
+        return value
+    
+    def visit_father_exp(self, exp: father_exp):
+        dist = self.locals[exp]
+        
+        father_class : pilang_class = self.scope.get_at(dist, "father")
+        
+        obj = self.scope.get_at(dist - 1, "this")
+        mtd = father_class.find_method(exp.method.lexeme)
+        
+        if mtd is None:
+            raise runtime_error(exp.method, f'Undefined property \'{exp.method.lexeme}\'.')
+        
+        return mtd.bind(obj)
+    
+    def visit_this_exp(self, exp: this_exp):
+        return self.look_up_var(exp.keyword, exp)
+    
     #endregion
     
     #region statements_visit
@@ -250,8 +278,32 @@ class interpreter(exp_visitor, stmt_visitor):
         raise return_error(value)
     
     def visit_class_stmt(self, stmt: class_stmt):
+        father_class = None
+        
+        if stmt.father_class is not None:
+            father_class = self.evaluate(stmt.father_class)
+            
+            if not isinstance(father_class, pilang_class):
+                raise runtime_error(stmt.father_class.name, "Father_class must be a class.")
+            
         self.scope.define(stmt.name.lexeme, None)
         
+        if stmt.father_class is not None:
+            self.scope = scope(self.scope)
+            self.scope.define("father", father_class)
+        
+        methods : Dict[str, pilang_func] = {}
+        
+        for mtd in stmt.methods:
+            func = pilang_func(mtd, self.scope, mtd.name.lexeme == "init")
+            methods[mtd.name.lexeme] = func
+        
+        _class = pilang_class(stmt.name.lexeme, father_class, methods)
+        
+        if stmt.father_class is not None:
+            self.scope = self.scope.enclosing
+        
+        self.scope.assign(stmt.name, _class)
         
     
     #endregion
