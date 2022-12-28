@@ -4,7 +4,8 @@ from .static_data import token_type, keywords_map
 
 class lexer:
     
-    def __init__(self, pilang_src : str) -> None:
+    def __init__(self, pilang_src : str, on_error = None) -> None:
+        self.on_error = on_error
         self.source = pilang_src
         self.tokens : List[token] = []
         self.start = self.current_pos = 0
@@ -13,7 +14,7 @@ class lexer:
         
     
     def add_token(self, token_type, literal = None):
-        text = self.source[self.start:self.current_pos]
+        text = self.source[self.start : self.current_pos]
         self.tokens.append(token(token_type, text, literal, self.line))
     
     def is_at_end(self) -> bool:
@@ -29,7 +30,7 @@ class lexer:
     
     def peek(self):
         if self.is_at_end():
-            return None
+            return '\0'
         else:
             return self.source[self.current_pos]
     
@@ -43,7 +44,8 @@ class lexer:
         if self.is_at_end():
             # throw an Unterminated string error in line self.line
             # and return
-            pass
+            self.on_error(self.line, "Unterminated string")
+            return
         #here we find "
         self.current_pos += 1
         
@@ -53,7 +55,7 @@ class lexer:
     
     def peek_next(self) -> str:
         if self.current_pos + 1 >= len(self.source):
-            return None
+            return '\0'
         return self.source[self.current_pos + 1]
     
     def consume_number(self):
@@ -67,7 +69,7 @@ class lexer:
             while self.peek().isdigit():
                 self.current_pos += 1
         
-        self.add_token(token_type.NUMBER, float(self.source[self.start:self.current_pos]))
+        self.add_token(token_type.NUMBER, float(self.source[self.start : self.current_pos]))
          
     def consume_identifier(self):
         while self.peek().isalnum():
@@ -104,8 +106,6 @@ class lexer:
                 self.add_token(token_type.SEMICOLON)
             case '*':
                 self.add_token(token_type.ASTERISK)
-            case '%':
-                self.add_token(token_type.REMAINDER)
             case'!':
                 self.add_token(token_type.NOT_EQUAL if self.match('=') else token_type.NOT)
             case '=':
@@ -143,10 +143,12 @@ class lexer:
                 elif char.isalpha():
                     #here we find an identifier and we need to consume it
                     self.consume_identifier() 
-                else:
+                elif self.on_error:
                     # throw an Unexpected character error in line self.line
                     # and continue scanning to find other potencial errors
-                    pass
+                    self.on_error(self.line, f'Unexpected character: {char}')
+                else:
+                    raise
     
     def tokenize(self):
         
@@ -155,3 +157,5 @@ class lexer:
             self.consume_token()
         
         self.tokens.append(token(token_type.EOF, '', None, self.line))
+        
+        return self.tokens
