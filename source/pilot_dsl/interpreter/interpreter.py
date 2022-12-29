@@ -9,6 +9,9 @@ from source.pilot_dsl.builtins.pilang_callable import pilang_callable
 from source.pilot_dsl.builtins.pilang_func import pilang_func
 from source.pilot_dsl.builtins.pilang_instance import pilang_instance
 from source.pilot_dsl.builtins.pilang_class import pilang_class
+from structlog import get_logger
+
+log = get_logger()
 
 class interpreter(exp_visitor, stmt_visitor):
     
@@ -156,8 +159,8 @@ class interpreter(exp_visitor, stmt_visitor):
             
             case token_type.EQUAL_EQUAL:
                 return self.is_equal(left, right)
-            
-        return None
+        
+        raise runtime_error(exp.operator, f'Unknown operator {exp.operator.lexeme}')
     
     def visit_var_exp(self, exp: var_exp):
         return self.look_up_var(exp.name, exp)
@@ -312,6 +315,7 @@ class interpreter(exp_visitor, stmt_visitor):
         try:
             res = None
             for stmt in statements:
+                log.debug("Executing", stmt)
                 res = self.execute(stmt)
             
             #return res #for testing and debugging
