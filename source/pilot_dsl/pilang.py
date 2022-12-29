@@ -20,7 +20,7 @@ class pilang:
         log.debug("Running line", source = source)
 
         _lexer = lexer(source, self.report_error)
-        tokens : list[token] = _lexer.tokenize()
+        tokens : list[token] = _lexer.tokens
         
         for token in tokens:
             log.debug("Token", token = token)
