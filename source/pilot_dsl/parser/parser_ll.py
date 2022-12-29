@@ -2,7 +2,7 @@ from typing import List, Optional
 from source.pilot_dsl.lexer.token_ import token
 from source.pilot_dsl.lexer.static_data import token_type
 from source.pilot_dsl.ast.expressions import *
-from source.pilot_dsl.errors.error import *
+from source.pilot_dsl.errors.error import parse_error
 from source.pilot_dsl.ast.statements import *
 
 """Grammar:
@@ -91,7 +91,7 @@ class parser_ll:
 
         params = []
         
-        # if next token es not ')', there are parameters
+        # if next token is not ')', there are parameters
         if not self.check(token_type.RIGHT_PAREN):
             # consume the first param 
             params.append(self.consume(token_type.IDENTIFIER, 'Expect parameter name.'))
@@ -150,7 +150,7 @@ class parser_ll:
     
     def _expression_stmt(self) -> statement:
         exp = self._expression()
-        self.consume(token_type.SEMICOLON, f'Exprect ; after {exp}')
+        self.consume(token_type.SEMICOLON, f'Expect ; after {exp}')
         return expression_stmt(exp)
     
     def _block(self) -> List[statement]:
