@@ -88,11 +88,11 @@ class pilang:
       
     def run_prompt(self):
         print("Pilang v0.1.0")
-        print("Press Ctrl+C or Ctrl+D to exit.")
+        print("Press Ctrl+C to exit.")
         
         while True:
             try:
-                prompt = input(">>> ")
+                prompt = input("> ")
                 if prompt and prompt[0] == chr(4):
                     raise EOFError
                 
