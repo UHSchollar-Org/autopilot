@@ -1,6 +1,6 @@
 import pathlib as pl
 import json
-from environment.map import *
+from source.environment._map import *
 
 def back_path(path: str, steps):
     for i in range(path.__len__()-1 , -1, -1):
@@ -16,7 +16,6 @@ def get_config_path():
     
 def map_from_json(map_name) -> map:
     path = get_config_path() + "\\map_config.json"
-    print(path)
     raw_map = map(map_name)
     
     with open(path, 'r') as f:

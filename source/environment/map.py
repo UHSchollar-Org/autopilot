@@ -1,6 +1,6 @@
 import networkx as nx
-from .traffic_signs import *
-import tools.general_tools as tl
+from source.environment.traffic_signs import *
+import source.tools.general_tools as tl
 
 
 ## Añadir en el contructor de interseccion el sort a la lista de calles conectadas
