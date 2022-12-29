@@ -5,7 +5,7 @@ from source.pilot_dsl.interpreter.interpreter import interpreter
 from collections import deque
 from typing import List, Deque, Dict
 from source.pilot_dsl.builtins.pilang_func import function_type
-from source.pilot_dsl.builtins.pilang_class import pilang_class, class_type
+from source.pilot_dsl.builtins.pilang_class import class_type
 
 class resolver(stmt_visitor, exp_visitor):
     def __init__(self, interpreter : interpreter, on_error = None) -> None:
@@ -120,7 +120,7 @@ class resolver(stmt_visitor, exp_visitor):
     def visit_father_exp(self, exp: father_exp):
         if self.current_class == class_type.NONE:
             self.on_error(exp.keyword, "Can't use 'father' outside of a class.")
-        
+
         elif self.current_class != class_type.SUBCLASS:
             self.on_error(exp.keyword, "Can't use 'father' in a class with no father_class.")
         
@@ -153,7 +153,7 @@ class resolver(stmt_visitor, exp_visitor):
         self.declare(stmt.name)
         self.define(stmt.name)
         
-        self.resolve_func(stmt)
+        self.resolve_func(stmt, function_type.FUNCTION)
     
     def visit_expression_stmt(self, stmt: expression_stmt):
         self.resolve_single_exp(stmt.expression)
@@ -195,6 +195,8 @@ class resolver(stmt_visitor, exp_visitor):
         if stmt.father_class is not None:
             self.current_class = class_type.SUBCLASS
             self.resolve_single_exp(stmt.father_class)
+        
+        if stmt.father_class is not None:    
             self.begin_scope()
             self.scopes[-1]["father"] = True
         
@@ -217,8 +219,3 @@ class resolver(stmt_visitor, exp_visitor):
         self.current_class = enclosing_class
         
     #endregion
-        
-    
-    
-    
-    
