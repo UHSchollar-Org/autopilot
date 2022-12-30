@@ -47,26 +47,33 @@ class map:
         self.name = name
         self.intersections : List[intersection] = []
         self.streets : List[street] = []
+        self.adj_dict : Dict[intersection, List[intersection]] = {}
         
     def add_street(self, st_signs, _intersections):
         inter1, inter2 = _intersections
+
         if inter1 not in self.intersections:
             self.intersections.append(inter1)
+            self.adj_dict[inter1] = []
+
         if inter2 not in self.intersections:
             self.intersections.append(inter2)
+            self.adj_dict[inter2] = []
             
         _street = street(inter1,inter2)
         if _street not in self.streets:
             self.streets.append(_street)
+            self.adj_dict[inter1].append(inter2)
+            
         
     
 class route:
     
     def __init__(self, streets : List[street]) -> None:
-        self.streets : List[street] = route
+        self.streets : List[street] = streets
         self.length = self.get_route_length()
     
-    def get_route_length(self) -> int:
+    def get_route_length(self) -> float:
         """Calculate the length of the route
 
         Returns:
