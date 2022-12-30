@@ -1,6 +1,9 @@
 from typing import *
 from source.tools.general_tools import *
 
+import networkx as nx
+import matplotlib.pyplot as plt
+
 class intersection:
     
     def __init__(self,connected_streets, geo_coord) -> None:
@@ -58,7 +61,19 @@ class map:
         _street = street(inter1,inter2)
         if _street not in self.streets:
             self.streets.append(_street)
+    
+    def draw_map(self):
+        graph = nx.DiGraph()
+        pos = {}
+        for _street in self.streets:
+            pos[_street.intersection1] = _street.intersection1.geo_coord
+            pos[_street.intersection2] = _street.intersection2.geo_coord
+            graph.add_edge(_street.intersection1,_street.intersection2)
+            
+        subax1 = plt.subplot(121)
+        nx.draw(graph, pos=pos,  with_labels=True, font_weight='bold')
         
+        plt.show()        
     
 class route:
     
