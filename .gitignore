@@ -64,3 +64,10 @@ tests/__pycache__/__init__.cpython-311.pyc
 tests/__pycache__/env_test.cpython-39.pyc
 tests/__pycache__/env_test.cpython-311.pyc
 tests/__pycache__/generic_test.cpython-311.pyc
+data/uber_dataset/uber-raw-data-apr14.csv
+data/uber_dataset/uber-raw-data-aug14.csv
+data/uber_dataset/uber-raw-data-jul14.csv
+data/uber_dataset/uber-raw-data-jun14.csv
+data/uber_dataset/uber-raw-data-may14.csv
+data/uber_dataset/uber-raw-data-sep14.csv
+data/uk_accidents/accident_data.csv
