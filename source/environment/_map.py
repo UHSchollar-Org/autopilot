@@ -1,5 +1,6 @@
 from typing import *
 from source.tools.general_tools import *
+from source.agents.car import *
 
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -29,12 +30,21 @@ class street:
     def __init__(self, intersection1 : intersection, intersection2 : intersection) -> None:
         self.intersection1 = intersection1
         self.intersection2 = intersection2
+        self.cars = []
         self.length =  distance_from_geo_coord( intersection1.geo_coord[0], 
                                                 intersection1.geo_coord[1],
                                                 intersection2.geo_coord[0],
                                                 intersection2.geo_coord[1])
         self.name = self.intersection1.name + " --- " + self.intersection2.name
+        
+    def add_car(self, _car : car):
+        """Add the car to th internal list of cars
 
+        Args:
+            _car (car): Car to be addded
+        """
+        self.cars.append(_car)
+        _car.pilot.location = self
 
     def __eq__(self, other) -> bool:
         return hash(self) == hash(other)
@@ -62,6 +72,19 @@ class map:
         if _street not in self.streets:
             self.streets.append(_street)
     
+    def add_car(self, _car : car, location : street):
+        """Add the given car to the guiven street
+
+        Args:
+            _car (car): Car to be added
+            location (street): Street where the car will be added
+        """
+        try:
+            index = self.streets.index(location)
+            self.streets[index].add_car(_car)
+        except:
+            raise Exception("The given street dont belong to the map")
+    
     def draw_map(self):
         graph = nx.DiGraph()
         pos = {}
@@ -74,15 +97,16 @@ class map:
         nx.draw(graph, pos=pos,  with_labels=True, font_weight='bold')
         
         plt.show()        
+ 
     
 class route:
     
     def __init__(self, streets : List[street]) -> None:
-        self.streets : List[street] = route
+        self.streets : List[street] = streets
         self.length = self.get_route_length()
     
     def get_route_length(self) -> int:
-        """Calculate the length of the route
+        """Calculate the length of the route.
 
         Returns:
             int: Length of the route in meters
@@ -91,6 +115,22 @@ class route:
         for _street in self.streets:
             distance_sum += _street.length
         return distance_sum
+    
+    def is_valid(self) -> bool:
+        """Check if a valid route. The street at position i must have 
+           an intersection in common with the street at position i+1
+
+        Returns:
+            bool: True if this route instance is a valid route
+        """
+        for i in range(1,len(self.streets)):
+            _street = self.streets[i-1]
+            next_street = self.streets[i]
+            if (_street.intersection1 != next_street.intersection1 and _street.intersection1 != next_street.intersection2 and
+                _street.intersection2 != next_street.intersection1 and _street.intersection2 != next_street.intersection2):
+                return False
+        return True
+                
     
     def __iter__(self):
         return route_iterator(self)
