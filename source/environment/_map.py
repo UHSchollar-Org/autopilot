@@ -1,5 +1,6 @@
-from typing import *
-from source.tools.general_tools import *
+from typing import Dict, List
+from source.tools.general_tools import distance_from_geo_coord,common_item
+from source.environment.traffic_signs import *
 
 class intersection:
     
@@ -23,14 +24,15 @@ class intersection:
 
 class street:
     
-    def __init__(self, intersection1 : intersection, intersection2 : intersection) -> None:
+    def __init__(self, intersection1 : intersection, intersection2 : intersection, traffic_signs : List[signal]) -> None:
         self.intersection1 = intersection1
         self.intersection2 = intersection2
+        self.traffic_signs = traffic_signs
         self.length =  distance_from_geo_coord( intersection1.geo_coord[0], 
                                                 intersection1.geo_coord[1],
                                                 intersection2.geo_coord[0],
                                                 intersection2.geo_coord[1])
-        self.name = self.intersection1.name + " --- " + self.intersection2.name
+        self.name = common_item(intersection1.connected_streets, intersection2.connected_streets)
 
 
     def __eq__(self, other) -> bool:
@@ -40,7 +42,7 @@ class street:
         return hash(self.intersection1.name + self.intersection2.name)
     
     def __str__(self) -> str:
-        return self.name
+        return self.intersection1.name + " --> " + self.intersection2.name
 
 class map:
     def __init__(self, name) -> None:
@@ -60,7 +62,7 @@ class map:
             self.intersections.append(inter2)
             self.adj_dict[inter2] = []
             
-        _street = street(inter1,inter2)
+        _street = street(inter1,inter2,st_signs)
         if _street not in self.streets:
             self.streets.append(_street)
             self.adj_dict[inter1].append(inter2)
