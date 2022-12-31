@@ -21,13 +21,26 @@ class env_test(test):
         
         #region Test1 : Map construction and drawing
         map1 = rd.map_from_json('Vedado')
-        map1.draw_map()
+        #map1.draw_map()
         #endregion
         
         #region Test2 : Testing add car and pilot to map
         pilot1 = pilot(None)
         car1 = car(pilot1)
-        map1.add_car(car1, map1.streets[0])
-        assert map1.streets[0].name == pilot1.location.name, "Adding car test failed"
+        map1.add_car(car1, map1.streets[3])
+        assert map1.streets[3].name == pilot1.location.name, "Adding car test failed"
         #endregion
         
+        #region Test3 : Making routes
+        _route = route([map1.streets[3],map1.streets[1],map1.streets[4]])
+        print(_route)
+        if _route.is_valid():
+            pilot1.route = _route
+            print(pilot1.location)
+            for i in range(5):
+                map1.move_car(car1)
+            print(pilot1.location)
+        else:
+            print('Invalid route')
+        
+        #endregion

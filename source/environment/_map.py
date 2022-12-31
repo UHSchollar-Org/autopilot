@@ -40,13 +40,24 @@ class street:
         self.name = self.intersection1.name + " --- " + self.intersection2.name
         
     def add_car(self, _car : car):
-        """Add the car to th internal list of cars
+        """Add the car to the internal list of cars
 
         Args:
             _car (car): Car to be addded
         """
         self.cars.append(_car)
         _car.pilot.location = self
+    
+    def remove_car(self, _car : car):
+        """Remove the car to the internal list of cars
+
+        Args:
+            _car (car): Car to be removed
+        """
+        try: 
+            self.cars.remove(_car)
+        except:
+            raise Exception("The car is not in this street")
 
     def __eq__(self, other) -> bool:
         return hash(self) == hash(other)
@@ -79,7 +90,6 @@ class map:
         if _street not in self.streets:
             self.streets.append(_street)
             self.adj_dict[inter1].append(inter2)
-
     
     def add_car(self, _car : car, location : street):
         """Add the given car to the guiven street
@@ -94,6 +104,19 @@ class map:
         except:
             raise Exception("The given street dont belong to the map")
     
+    def move_car(self, _car : car):
+        """_summary_
+
+        Args:
+            _car (car): _description_
+        """
+        start_loc = _car.pilot.location
+        _car.move()
+        end_loc = _car.pilot.location
+        if start_loc != end_loc:
+            start_loc.remove_car(_car)
+            end_loc.add_car(_car)
+    
     def draw_map(self):
         graph = nx.DiGraph()
         pos = {}
@@ -105,7 +128,7 @@ class map:
         subax1 = plt.subplot(121)
         nx.draw(graph, pos=pos,  with_labels=True, font_weight='bold')
         
-        plt.show()        
+        plt.show()
  
     
 class route:
@@ -113,6 +136,7 @@ class route:
     def __init__(self, streets : List[street]) -> None:
         self.streets : List[street] = streets
         self.length = self.get_route_length()
+        self.current = 0
     
 
 
@@ -138,29 +162,32 @@ class route:
         for i in range(1,len(self.streets)):
             _street = self.streets[i-1]
             next_street = self.streets[i]
-            if (_street.intersection1 != next_street.intersection1 and _street.intersection1 != next_street.intersection2 and
-                _street.intersection2 != next_street.intersection1 and _street.intersection2 != next_street.intersection2):
+            if _street.intersection2 != next_street.intersection1:
                 return False
         return True
                 
+    def __str__(self) -> str:
+        result = ''
+        for _street in self.streets:
+            result += _street.name + '|'
+        return result
     
-    def __iter__(self):
-        return route_iterator(self)
-    
-class route_iterator:
-    
-    def __init__(self, rte : route):
-        self.rte = rte
-        self.current = 0
-        
     def __iter__(self):
         return self
     
     def __next__(self):
-        if self.current < len(self.rte.route):
-            result = self.rte.route[self.current]
+        if self.current < len(self.streets):
+            result = self.streets[self.current]
             self.current += 1
             return result
         else:
             self.current = 0
-            raise StopIteration('Iteration is finished')
+            raise StopIteration('Iteration is finished')    
+    
+    def peek(self) -> street:
+        """Return the current street on the route
+
+        Returns:
+            street: Result of streets[current]
+        """
+        return self.streets[self.current]
