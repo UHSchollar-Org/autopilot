@@ -22,7 +22,12 @@ def map_from_json(map_name) -> map:
         j_map = json.load(f)
         
         for s in j_map['streets']:
-            signs = s['traffic_signs']
+            signs = []
+            for sign in s['traffic_signs']:
+                match sign:
+                    case 'Stop':
+                        signs.append(stop())
+                        
             inter1 = intersection(s['intersection1'], s['geo_coord_1'])
             inter2 = intersection(s['intersection2'], s['geo_coord_2'])
             
