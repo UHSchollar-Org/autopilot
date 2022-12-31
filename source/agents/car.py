@@ -18,4 +18,4 @@ class car:
     def move(self) -> None:
         """Move the car according to the route given by the pilot
         """
-        pass
+        self.pilot.drive_next_loc()

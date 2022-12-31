@@ -1,9 +1,14 @@
-
+from enum import Enum, auto
 class signal:
     def __str__(self) -> str:
         return "generic_signal"
 
 class traffic_light(signal):
+    class state(Enum):
+        GREEN = auto()
+        RED = auto(),
+        YELLOW = auto(),
+        
     def __str__(self) -> str:
         return "traffic_light"
 
