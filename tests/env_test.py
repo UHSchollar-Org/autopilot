@@ -1,6 +1,7 @@
 from source.environment._map import *
 from source.environment.console_printer import print_signs, print_streets, print_street_len
 from source.agents.car import *
+from source.agents.client import *
 import source.tools.reader as rd
 import networkx as nx
 from tests.env_test import *
@@ -31,7 +32,7 @@ class env_test(test):
         assert map1.streets[3].name == pilot1.location.name, "Adding car test failed"
         #endregion
         
-        """#region Test3 : Making routes
+        #region Test3 : Making routes
         _route = route([map1.streets[3],map1.streets[1],map1.streets[4]])
         if _route.is_valid():
             pilot1.route = _route
@@ -40,17 +41,31 @@ class env_test(test):
             assert map1.streets[4] == pilot1.location, f"Moving car test failed, pilot location = {pilot1.location} and most be {map1.streets[4]}"
         else:
             print('Invalid route')
-        #endregion"""
+        #endregion
         
         #region Test4 : Testing pilot and Stop Signals
         _route = route([map1.streets[39],map1.streets[40]])
-        time  = 0
         if _route.is_valid():
             pilot1.route = _route
             for i in range(4):
                 map1.move_car(car1)
-                time += 1
             assert map1.streets[40] == pilot1.location, f"Stop signals test failed, pilot location = {pilot1.location} and most be {map1.streets[40]}"
         else:
             print('Invalid route')
+        #endregion
+        
+        #region Test5: Testing car odometer & taximeter
+        pilot2 = pilot(None)
+        car2 = car(pilot2)
+        map1.add_car(car2, map1.streets[4])
+        _route = route([map1.streets[39],map1.streets[40]])
+        car2.client = client(pilot2.location,map1.streets[40],2)
+        if _route.is_valid():
+            pilot2.route = _route
+            for i in range(4):
+                map1.move_car(car2)
+            print(car2.odometer)
+            print(car2.taximeter)
+        else:
+            print('Invalid route')  
         #endregion

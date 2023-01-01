@@ -1,5 +1,6 @@
 from source.environment._map import *
 from source.environment.traffic_signs import *
+from source.tools.general_tools import *
 
 class pilot:
     
@@ -10,10 +11,13 @@ class pilot:
         self.wait_time = 0
         self.trafic_signals_checked = False
     
-    def drive_next_loc(self):
-        """The pilot checks the traffic signs of the street where he is,
-           then if any sign does not prevent him, he moves to the next 
-           street on the route
+    def drive_next_loc(self) -> float:
+        """The pilot checks the traffic signs and if allowed, 
+        moves to the next location on the route. If the route is empty,
+        it remains in its location.
+
+        Returns:
+            float: Distance that was driven in meters
         """
         if self.wait_time == 0:
             try:
@@ -22,11 +26,14 @@ class pilot:
                     self.trafic_signals_checked = True
                     for _signal in self.location.traffic_signs:
                         if isinstance(_signal, stop):
-                            return
+                            return 0
+                driven_distance = self.location.length
                 self.location = next(self.route)
                 self.trafic_signals_checked = False
+                return driven_distance
             except:
                 self.route = None
+                return 0
         else:
             self.wait_time -= 1
 
