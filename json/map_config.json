@@ -76,7 +76,7 @@
             "intersection2" : ["G", "21"],
             "geo_coord_1" : [23.136474573337054, -82.38988613659926],
             "geo_coord_2" : [23.137207261672614, -82.38887255384276],
-            "traffic_signs" : []
+            "traffic_signs" : ["Stop"]
         },
         {
             "intersection1" : ["Paseo", "23"],
@@ -223,7 +223,7 @@
             "intersection2" : ["Paseo", "25"],
             "geo_coord_1" : [23.131234883514903, -82.39247720727708],
             "geo_coord_2" : [23.130456331978216, -82.39350784314539],
-            "traffic_signs" : []
+            "traffic_signs" : ["Stop"]
         },
         {
             "intersection1" : ["G", "25"],
@@ -279,91 +279,91 @@
             "intersection2" : ["A", "23"],
             "geo_coord_1" : [23.13308399026051, -82.39424244389969],
             "geo_coord_2" : [23.132055396690696, -82.39325792217264],
-            "traffic_signs" : []
+            "traffic_signs" : ["Stop"]
         },
         {
             "intersection1" : ["A", "23"],
             "intersection2" : ["A", "25"],
             "geo_coord_1" : [23.132055396690696, -82.39325792217264],
             "geo_coord_2" : [23.131234883514903, -82.39247720727708],
-            "traffic_signs" : []
+            "traffic_signs" : ["Stop"]
         },
         {
             "intersection1" : ["B", "25"],
             "intersection2" : ["B", "23"],
             "geo_coord_1" : [23.13188043474465, -82.39163307300358],
             "geo_coord_2" : [23.132741164882383, -82.39241160103575],
-            "traffic_signs" : []
+            "traffic_signs" : ["Stop"]
         },
         {
             "intersection1" : ["B", "23"],
             "intersection2" : ["B", "21"],
             "geo_coord_1" : [23.132741164882383, -82.39241160103575],
             "geo_coord_2" : [23.133723218116053, -82.39335508288505],
-            "traffic_signs" : []
+            "traffic_signs" : ["Stop"]
         },
         {
             "intersection1" : ["C", "21"],
             "intersection2" : ["C", "23"],
             "geo_coord_1" : [23.134381156031644, -82.3924770057827],
             "geo_coord_2" : [23.133412852323534, -82.391519355448],
-            "traffic_signs" : []
+            "traffic_signs" : ["Stop"]
         },
         {
             "intersection1" : ["C", "23"],
             "intersection2" : ["C", "25"],
             "geo_coord_1" : [23.133412852323534, -82.391519355448],
             "geo_coord_2" : [23.132548104400627, -82.39076488309736],
-            "traffic_signs" : []
+            "traffic_signs" : ["Stop"]
         },
         {
             "intersection1" : ["D", "25"],
             "intersection2" : ["D", "23"],
             "geo_coord_1" : [23.133107174627817, -82.39003665326247],
             "geo_coord_2" : [23.133961863810814, -82.3907933124974],
-            "traffic_signs" : []
+            "traffic_signs" : ["Stop"]
         },
         {
             "intersection1" : ["D", "23"],
             "intersection2" : ["D", "21"],
             "geo_coord_1" : [23.133961863810814, -82.3907933124974],
             "geo_coord_2" : [23.13500420030079, -82.39171275362506],
-            "traffic_signs" : []
+            "traffic_signs" : ["Stop"]
         },
         {
             "intersection1" : ["E", "19"],
             "intersection2" : ["E", "21"],
             "geo_coord_1" : [23.136564129150127, -82.39145994248699],
             "geo_coord_2" : [23.13579172413683, -82.39072627204271],
-            "traffic_signs" : []
+            "traffic_signs" : ["Stop"]
         },
         {
             "intersection1" : ["E", "21"],
             "intersection2" : ["E", "23"],
             "geo_coord_1" : [23.13579172413683, -82.39072627204271],
             "geo_coord_2" : [23.134711974772458, -82.38975235935956],
-            "traffic_signs" : []
+            "traffic_signs" : ["Stop"]
         },
         {
             "intersection1" : ["E", "23"],
             "intersection2" : ["E", "25"],
             "geo_coord_1" : [23.134711974772458, -82.38975235935956],
             "geo_coord_2" : [23.133875389625775, -82.38896945758526],
-            "traffic_signs" : []
+            "traffic_signs" : ["Stop"]
         },
         {
             "intersection1" : ["F", "25"],
             "intersection2" : ["F", "23"],
             "geo_coord_1" : [23.134539027314688, -82.38808158578328],
             "geo_coord_2" : [23.13539169636758, -82.38886667439948],
-            "traffic_signs" : []
+            "traffic_signs" : ["Stop"]
         },
         {
             "intersection1" : ["F", "23"],
             "intersection2" : ["F", "21"],
             "geo_coord_1" : [23.13539169636758, -82.38886667439948],
             "geo_coord_2" : [23.136474573337054, -82.38988613659926],
-            "traffic_signs" : []
+            "traffic_signs" : ["Stop"]
         }
     ]   
 }

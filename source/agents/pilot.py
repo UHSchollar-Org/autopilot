@@ -1,4 +1,5 @@
 from source.environment._map import *
+from source.environment.traffic_signs import *
 
 class pilot:
     
@@ -7,6 +8,7 @@ class pilot:
         self.strategy = strategy
         self.route : route = None
         self.wait_time = 0
+        self.trafic_signals_checked = False
     
     def drive_next_loc(self):
         """The pilot checks the traffic signs of the street where he is,
@@ -16,10 +18,13 @@ class pilot:
         if self.wait_time == 0:
             try:
                 next_loc = self.route.peek()
-                for _signal in self.location.traffic_signs:
-                    if isinstance(_signal, stop):
-                        return
+                if not self.trafic_signals_checked:
+                    self.trafic_signals_checked = True
+                    for _signal in self.location.traffic_signs:
+                        if isinstance(_signal, stop):
+                            return
                 self.location = next(self.route)
+                self.trafic_signals_checked = False
             except:
                 self.route = None
         else:
