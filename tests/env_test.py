@@ -31,16 +31,26 @@ class env_test(test):
         assert map1.streets[3].name == pilot1.location.name, "Adding car test failed"
         #endregion
         
-        #region Test3 : Making routes
+        """#region Test3 : Making routes
         _route = route([map1.streets[3],map1.streets[1],map1.streets[4]])
-        print(_route)
         if _route.is_valid():
             pilot1.route = _route
-            print(pilot1.location)
             for i in range(5):
                 map1.move_car(car1)
-            print(pilot1.location)
+            assert map1.streets[4] == pilot1.location, f"Moving car test failed, pilot location = {pilot1.location} and most be {map1.streets[4]}"
         else:
             print('Invalid route')
+        #endregion"""
         
+        #region Test4 : Testing pilot and Stop Signals
+        _route = route([map1.streets[39],map1.streets[40]])
+        time  = 0
+        if _route.is_valid():
+            pilot1.route = _route
+            for i in range(4):
+                map1.move_car(car1)
+                time += 1
+            assert map1.streets[40] == pilot1.location, f"Stop signals test failed, pilot location = {pilot1.location} and most be {map1.streets[40]}"
+        else:
+            print('Invalid route')
         #endregion
