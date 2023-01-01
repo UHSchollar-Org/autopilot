@@ -4,12 +4,14 @@ from source.tools.general_tools import *
 
 class pilot:
     
-    def __init__(self, strategy) -> None:
+    def __init__(self, strategy, _map : map) -> None:
+        self.map = _map
         self.location : street = None
         self.strategy = strategy
         self.route : route = None
-        self.wait_time = 0
         self.trafic_signals_checked = False
+        self.client : client = None
+        self.client_picked_up : bool = False
     
     def drive_next_loc(self) -> float:
         """The pilot checks the traffic signs and if allowed, 
@@ -19,26 +21,41 @@ class pilot:
         Returns:
             float: Distance that was driven in meters
         """
-        if self.wait_time == 0:
-            try:
-                next_loc = self.route.peek()
-                if not self.trafic_signals_checked:
-                    self.trafic_signals_checked = True
-                    for _signal in self.location.traffic_signs:
-                        if isinstance(_signal, stop):
-                            return 0
-                driven_distance = self.location.length
-                self.location = next(self.route)
-                self.trafic_signals_checked = False
-                return driven_distance
-            except:
-                self.route = None
-                return 0
-        else:
-            self.wait_time -= 1
+        try:
+            next_loc = self.route.peek()
+            if not self.trafic_signals_checked:
+                self.trafic_signals_checked = True
+                for _signal in self.location.traffic_signs:
+                    if isinstance(_signal, stop):
+                        return 0
+            driven_distance = self.location.length
+            self.location = next(self.route)
+            #If the taxi is at the client's location then it picks them up
+            if self.client and self.location == self.client.location:
+                self.client_picked_up = True
+                """Aqui calculamos la ruta hacia el destino del cliente"""
+                
+            #If the taxi is at the client's destination location then it leaves it
+            if self.client and self.location == self.client.destination:
+                self.client_picked_up = False
+                self.client = None
+            #As the taxi is on a new street so it haven't checked the signs for this location
+            self.trafic_signals_checked = False
+            
+            return driven_distance
+        except:
+            self.route = None
+            return 0
 
     def load_route(self, _route):
         if _route.peek() != self.location:
             raise Exception('Pilot cannot load a route that does not start at its location')
         else:
             self.route = _route
+            
+    def select_client(self, clients):
+        """Select the most profitable client and load the best route to it
+
+        Args:
+            clients (List[client]): List of clients to select
+        """

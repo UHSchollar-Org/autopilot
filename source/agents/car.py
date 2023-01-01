@@ -19,12 +19,13 @@ class car:
         self.distance_price = float(config['DEFAULT']['DISTANCE_PRICE'])
         self.odometer = 0
         self.pilot = _pilot
-        self.client : client = None
+        self.busy : bool = False
         
     def move(self) -> None:
         """Move the car according to the route given by the pilot
         """
         distance_driven = self.pilot.drive_next_loc()
         self.odometer += distance_driven
-        if self.client:
+        if self.busy:
             self.taximeter += distance_driven * self.distance_price
+        self.busy = self.pilot.client_picked_up

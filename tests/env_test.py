@@ -26,7 +26,7 @@ class env_test(test):
         #endregion
         
         #region Test2 : Testing add car and pilot to map
-        pilot1 = pilot(None)
+        pilot1 = pilot(None, map1)
         car1 = car(pilot1)
         map1.add_car(car1, map1.streets[3])
         assert map1.streets[3].name == pilot1.location.name, "Adding car test failed"
@@ -43,7 +43,7 @@ class env_test(test):
             print('Invalid route')
         #endregion
         
-        #region Test4 : Testing pilot and Stop Signals
+        #region Test4 : Pilot and Stop Signals
         _route = route([map1.streets[39],map1.streets[40]])
         if _route.is_valid():
             pilot1.route = _route
@@ -54,18 +54,33 @@ class env_test(test):
             print('Invalid route')
         #endregion
         
-        #region Test5: Testing car odometer & taximeter
-        pilot2 = pilot(None)
+        #region Test5: Car odometer & taximeter
+        pilot2 = pilot(None, map1)
         car2 = car(pilot2)
         map1.add_car(car2, map1.streets[4])
         _route = route([map1.streets[39],map1.streets[40]])
-        car2.client = client(pilot2.location,map1.streets[40],2)
+        car2.pilot.client = client(map1.streets[39],map1.streets[40],2)
         if _route.is_valid():
             pilot2.route = _route
             for i in range(4):
                 map1.move_car(car2)
-            print(car2.odometer)
-            print(car2.taximeter)
+            assert car2.odometer == 282.3, f"Odometer test failed, odometer = {car2.odometer} and most be {282.3}"
+            assert car2.taximeter == 0.22860000000000003, f"Taximeter test failed, odometer = {car2.taximeter} and most be {0.22860000000000003}"
         else:
             print('Invalid route')  
+        #endregion
+        
+        #region Test6: Pick up and drop off clients
+        pilot3 = pilot(None, map1)
+        car3 = car(pilot3)
+        map1.add_car(car3, map1.streets[4])
+        _route = route([map1.streets[39],map1.streets[40],map1.streets[31]])
+        car3.pilot.client = client(map1.streets[39],map1.streets[40],2)
+        if _route.is_valid():
+            pilot3.route = _route
+            for i in range(6):
+                map1.move_car(car3)
+            assert car3.taximeter == 0.22860000000000003, f"Pick up and drop off clients test failed, taximeter = {car3.taximeter} and most be {0.22860000000000003}"
+        else:
+            print('Invalid route')
         #endregion
