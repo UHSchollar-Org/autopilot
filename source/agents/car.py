@@ -20,6 +20,8 @@ class car:
         self.odometer = 0
         self.pilot = _pilot
         self.busy : bool = False
+        #car battery charge
+        self.battery : float = 100
         
     def move(self) -> None:
         """Move the car according to the route given by the pilot

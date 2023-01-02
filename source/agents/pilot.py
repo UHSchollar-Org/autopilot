@@ -1,10 +1,12 @@
 from source.environment._map import *
 from source.environment.traffic_signs import *
 from source.tools.general_tools import *
+from source.ia.astar import *
+from source.ia.heuristic import *
 
 class pilot:
     
-    def __init__(self, strategy, _map : map) -> None:
+    def __init__(self, strategy, _map : map, garages : List[street]) -> None:
         self.map = _map
         self.location : street = None
         self.strategy = strategy
@@ -12,6 +14,8 @@ class pilot:
         self.trafic_signals_checked = False
         self.client : client = None
         self.client_picked_up : bool = False
+        self.garages = garages
+        self.astar = astar(euclidean,self.map.adj_dict)
     
     def drive_next_loc(self) -> float:
         """The pilot checks the traffic signs and if allowed, 
@@ -52,6 +56,14 @@ class pilot:
             raise Exception('Pilot cannot load a route that does not start at its location')
         else:
             self.route = _route
+    
+    def load_garage_route(self):
+        """From the list of available garages, 
+        select the closest one and load the route to it.
+        """
+        for garage in self.garages:
+            intersections = self.astar.get_path(self.location.intersection1, garage.intersection1)
+            self.route = route(from_intersections_to_streets(intersections))    
             
     def select_client(self, clients):
         """Select the most profitable client and load the best route to it
@@ -59,3 +71,7 @@ class pilot:
         Args:
             clients (List[client]): List of clients to select
         """
+        result = None
+        
+        if not result:
+            self.load_garege_route()

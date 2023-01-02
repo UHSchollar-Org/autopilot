@@ -8,7 +8,7 @@ class astar:
         self.h = h
         self.adj_dict = adj_dict
             
-    def get_path(self, start : intersection, end : intersection):
+    def get_path(self, start : intersection, end : intersection) -> List[intersection]:
         open_nodes : List[intersection] = [start]
         closed_nodes : List[intersection] = []
         pi : Dict[intersection, intersection] = {start:start}
