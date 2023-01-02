@@ -95,3 +95,4 @@ data/uk_accidents/accident_data.csv
 source/tools/__pycache__/reader.cpython-310.pyc
 source/environment/__pycache__/traffic_signs.cpython-310.pyc
 source/environment/__pycache__/traffic_signs.cpython-310.pyc
+data/nyc_yellow_taxi_data/df_all.csv
