@@ -34,7 +34,7 @@ class astar:
                 return path
             
             for adj in self.adj_dict[current]:
-                w = distance_from_geo_coord(current.geo_coord[0], current.geo_coord[1], adj.geo_coord[0], adj.geo_coord[1])
+                w = distance_from_geo_coord(current.geo_coord, adj.geo_coord)
                 
                 if adj not in closed_nodes and adj not in open_nodes:
                     open_nodes.append(adj)

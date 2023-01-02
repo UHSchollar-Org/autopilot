@@ -14,11 +14,11 @@ def common_item(list1, list2) -> str:
             if i1 == i2:
                 return i1
             
-def distance_from_geo_coord(latitude1, longitude1, latitude2, longitude2) -> float:
-    latitude1 = radians(latitude1)
-    longitude1 = radians(longitude1)
-    latitude2 = radians(latitude2)
-    longitude2 = radians(longitude2)
+def distance_from_geo_coord(point1 : tuple, point2 : tuple)-> float:
+    latitude1 = radians(point1[0])
+    longitude1 = radians(point1[1])
+    latitude2 = radians(point2[0])
+    longitude2 = radians(point2)
     
     dlat = latitude2 - latitude1
     dlon = longitude2 - longitude1

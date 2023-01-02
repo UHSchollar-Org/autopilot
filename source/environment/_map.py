@@ -33,10 +33,7 @@ class street:
         self.intersection2 = intersection2
         self.cars = []
         self.traffic_signs = traffic_signs
-        self.length =  distance_from_geo_coord( intersection1.geo_coord[0], 
-                                                intersection1.geo_coord[1],
-                                                intersection2.geo_coord[0],
-                                                intersection2.geo_coord[1])
+        self.length =  distance_from_geo_coord( intersection1.geo_coord, intersection2.geo_coord)
         self.name = self.intersection1.name + " --- " + self.intersection2.name
         
     def add_car(self, _car : car):

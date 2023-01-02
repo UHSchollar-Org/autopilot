@@ -1,10 +1,13 @@
 from source.environment._map import map, street, intersection
+from source.tools.general_tools import distance_from_geo_coord
 from source.agents.car import car
 from source.agents.client import client
 from source.agents.agency import agency
 from typing import List, Dict
 from scipy.stats import expon
 from random import randint
+
+import numpy as np
 
 class simulation:
     def __init__(self, map : map, agency : agency, steps : int) -> None:
@@ -37,8 +40,27 @@ class simulation:
     def clients_in_movement(self) -> int:
         return self.pickups - self.deliveries
 
-    def get_destination(self, location : int, distance : float) -> street:
-        pass
+    def get_destination(self, location : street, _distance : float) -> street:
+        """Returns a location on the map that is the given distance from the starting location. 
+           Euclidean distance is used
+
+        Args:
+            location (int): Route origin location
+            distance (float): Distance that must exist between the origin and the destination
+
+        Returns:
+            street: Location that is at the given distance from the received location
+        """
+        result = None
+        error = np.inf
+        
+        for _street in self.map.streets:
+            distance = distance_from_geo_coord(location.intersection1.geo_coord,_street.intersection1.geo_coord)
+            if abs(distance - _distance) < error:
+                result = _street
+                error = abs(distance - _distance)
+        
+        return result
         
     
     def generate_client(self) -> None:
