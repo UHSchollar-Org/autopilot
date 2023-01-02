@@ -1,5 +1,5 @@
 from source.environment._map import intersection
-from .heuristic import heuristic
+from source.ia.heuristics.heuristic import heuristic
 from typing import Dict, List
 from source.tools.general_tools import distance_from_geo_coord
 
