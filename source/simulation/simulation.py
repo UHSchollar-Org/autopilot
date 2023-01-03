@@ -68,7 +68,6 @@ class simulation:
         location = randint(0, len(self.map.streets) - 1)
         distance = lognorm.rvs(1)
         destination = self.get_destination(location, distance)
-        destination = randint(0, len(self.map.streets) - 1)
         self.next_client = client(self.map.streets[location], self.map.streets[destination], self.current_time + wait_time)
         
     def client_to_system(self):
@@ -91,6 +90,16 @@ class simulation:
         for car in self.agency.cars:
             self.map.move_car(car)
     
+    def print_status(self):
+        print("Time: ", self.current_time)
+        print("Clients in movement: ", self.clients_in_movement())
+        print("Pickups: ", self.pickups)
+        print("Deliveries: ", self.deliveries)
+        print("Cars: ")
+        for car in self.agency.cars:
+            print("Car ", car.id, " - Pickups: ", self.cars_pickups[car], " - Money: ", self.cars_money[car], " - Mantainance: ", self.cars_mantainance[car])
+        print("Next client: ", self.next_client)
+    
     def run(self):
         while self.current_time <= self.total_time:
             
@@ -103,6 +112,7 @@ class simulation:
             self.charge_routes()
             # Move cars
             self.move_cars()
-            
+            # Print simulation status
+            self.print_status()
             
     
