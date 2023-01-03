@@ -1,11 +1,11 @@
 from source.environment._map import intersection
 from source.ia.heuristics.heuristic import heuristic
 from typing import Dict, List
-from source.tools.general_tools import distance_from_geo_coord
 
 class astar:
-    def __init__(self, h : heuristic, adj_dict : Dict[intersection, List[intersection]]) -> None:
+    def __init__(self, cost_func,  h : heuristic, adj_dict : Dict[intersection, List[intersection]]) -> None:
         self.h = h
+        self.cost_func = cost_func
         self.adj_dict = adj_dict
             
     def get_path(self, start : intersection, end : intersection):
@@ -34,7 +34,7 @@ class astar:
                 return path
             
             for adj in self.adj_dict[current]:
-                w = distance_from_geo_coord(current.geo_coord[0], current.geo_coord[1], adj.geo_coord[0], adj.geo_coord[1])
+                w = self.cost_func(current, adj)
                 
                 if adj not in closed_nodes and adj not in open_nodes:
                     open_nodes.append(adj)
