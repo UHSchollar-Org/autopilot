@@ -16,7 +16,11 @@ class intersection:
         for i in range(len(connected_streets)-1):
             self.name += (connected_streets[i] + '/')
         self.name += connected_streets[len(connected_streets)-1]
-        
+    
+    @staticmethod
+    def distance(inter1 : intersection, inter2 : intersection):
+        return distance_from_geo_coord(inter1.geo_coord, inter2.geo_coord)
+    
     def __eq__(self, other) -> bool:
         return hash(self) == hash(other)
         
