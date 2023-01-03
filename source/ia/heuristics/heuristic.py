@@ -4,6 +4,7 @@ from typing import Any
 
 class heuristic(ABC):
     @abstractmethod
+    @staticmethod
     def evaluate(self, *params) -> Any:
         raise NotImplementedError
 

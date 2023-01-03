@@ -5,7 +5,7 @@ from typing import Dict, Deque
 from source.tools.general_tools import distance_from_geo_coord
 
 class bfs(heuristic):
-    
+    @staticmethod
     def evaluate(self, start : intersection, map : map, min_dist : float) -> Dict[intersection, float]:
         q : Deque[intersection] = [start]
         d : Dict[intersection, float] = {start : 0}
