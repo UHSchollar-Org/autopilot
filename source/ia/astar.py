@@ -1,14 +1,16 @@
-from source.environment._map import intersection
+from typing import Dict, List, TYPE_CHECKING
+if TYPE_CHECKING:
+    from source.environment._map import intersection
 from source.ia.heuristics.heuristic import heuristic
-from typing import Dict, List
+
 
 class astar:
-    def __init__(self, cost_func,  h : heuristic, adj_dict : Dict[intersection, List[intersection]]) -> None:
+    def __init__(self, cost_func,  h : heuristic, adj_dict : Dict) -> None:
         self.h = h
         self.cost_func = cost_func
         self.adj_dict = adj_dict
             
-    def get_path(self, start : intersection, end : intersection) -> List[intersection]:
+    def get_path(self, start , end ) -> List:
         open_nodes : List[intersection] = [start]
         closed_nodes : List[intersection] = []
         pi : Dict[intersection, intersection] = {start:start}

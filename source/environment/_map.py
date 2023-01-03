@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import *
 from source.tools.general_tools import *
 from source.agents.car import *
@@ -153,6 +154,14 @@ class map:
                 
         return cost
     #endregion
+    
+    def from_intersections_to_streets(intersections : List[intersection]) -> List[street]:
+        """Dada una lista de intersecciones devuelve la lista de calles que forman
+        """
+        result : List[street] = []
+        for i in range(1,len(intersections)):
+            result.append(street(intersections[i-1]),street(intersections[i]))
+        return result
     
 class route:
     

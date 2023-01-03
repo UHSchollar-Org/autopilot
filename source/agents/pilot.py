@@ -7,7 +7,7 @@ from source.ia.heuristics.euclidean_dist import *
 
 class pilot:
     
-    def __init__(self, cost_function, heuristic : heuristic, _map : map, garages : List[street]) -> None:
+    def __init__(self, cost_function, heuristic : heuristic, _map : map, garages : List) -> None:
         self.map = _map
         self.location : street = None
         self.astar = astar(cost_function, heuristic, _map.adj_dict)
@@ -64,7 +64,9 @@ class pilot:
         """
         for garage in self.garages:
             intersections = self.astar.get_path(self.location.intersection1, garage.intersection1)
-            self.route = route(from_intersections_to_streets(intersections))    
+            self.route = route(self.map.from_intersections_to_streets(intersections))    
+            
+        
             
     def select_client(self, clients):
         """Select the most profitable client and load the best route to it
@@ -74,5 +76,9 @@ class pilot:
         """
         result = None
         
+        
+        
         if not result:
-            self.load_garege_route()
+            self.load_garage_route()
+            
+        return result
