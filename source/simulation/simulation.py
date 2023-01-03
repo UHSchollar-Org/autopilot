@@ -4,7 +4,7 @@ from source.agents.car import car
 from source.agents.client import client
 from source.agents.agency import agency
 from typing import List, Dict
-from scipy.stats import expon
+from scipy.stats import expon, lognorm
 from random import randint
 
 import numpy as np
@@ -66,7 +66,7 @@ class simulation:
     def generate_client(self) -> None:
         wait_time = expon.rvs(size = 1)
         location = randint(0, len(self.map.streets) - 1)
-        distance = None
+        distance = lognorm.rvs(1)
         destination = self.get_destination(location, distance)
         destination = randint(0, len(self.map.streets) - 1)
         self.next_client = client(self.map.streets[location], self.map.streets[destination], self.current_time + wait_time)
