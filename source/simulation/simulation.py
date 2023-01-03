@@ -64,11 +64,11 @@ class simulation:
         
     
     def generate_client(self) -> None:
-        wait_time = expon.rvs(size = 1)
-        location = randint(0, len(self.map.streets) - 1)
-        distance = lognorm.rvs(1)
+        wait_time = round(expon.rvs(size = 1)[0])
+        location = self.map.streets[randint(0, len(self.map.streets) - 1)]
+        distance = lognorm.rvs(1)*1000
         destination = self.get_destination(location, distance)
-        self.next_client = client(self.map.streets[location], self.map.streets[destination], self.current_time + wait_time)
+        self.next_client = client(location, destination, self.current_time + wait_time)
         
     def client_to_system(self):
         while self.next_client.request_time <= self.current_time:
@@ -77,10 +77,10 @@ class simulation:
     
     def car_pickup(self, car : car):
         if not car.busy and self.clients:
-            client = car.pilot.pick_client(self.clients, self.map)
-            self.clients.remove(client)
-            self.pickups += 1
-            self.cars_pickups[car] += 1
+            if client := car.pilot.select_client(self.clients, car.battery):
+                self.clients.remove(client)
+                self.pickups += 1
+                self.cars_pickups[car] += 1
     
     def charge_routes(self):
         for car in self.agency.cars:
@@ -114,5 +114,8 @@ class simulation:
             self.move_cars()
             # Print simulation status
             self.print_status()
+            
+            self.current_time += 1
+            
             
     
