@@ -7,11 +7,11 @@ from source.ia.heuristics.euclidean_dist import *
 
 class pilot:
     
-    def __init__(self, cost_function, heuristic : heuristic, _map : map, garages : List) -> None:
+    def __init__(self, cost_function, heuristic : heuristic, client_selection_strategy : heuristic, _map : map, garages : List) -> None:
         self.map = _map
         self.location : street = None
         self.astar = astar(cost_function, heuristic, _map.adj_dict)
-        self.client_selection = None
+        self.client_selection = client_selection_strategy
         self.route : route = None
         self.trafic_signals_checked = False
         self.client : client = None
@@ -58,27 +58,52 @@ class pilot:
         else:
             self.route = _route
     
-    def load_garage_route(self):
+    def get_garage_route(self, location : street):
         """From the list of available garages, 
         select the closest one and load the route to it.
         """
+        nearest_garage : route = None
         for garage in self.garages:
-            intersections = self.astar.get_path(self.location.intersection1, garage.intersection1)
-            self.route = route(self.map.from_intersections_to_streets(intersections))    
+            intersections = self.astar.get_path(location.intersection2, garage.intersection2)
+            garage_route = route(self.map.from_intersections_to_streets(intersections))
+            if not nearest_garage or nearest_garage.length == garage_route.length:
+                nearest_garage = garage_route
+        return nearest_garage
             
         
             
-    def select_client(self, clients):
+    def select_client(self, clients, battery):
         """Select the most profitable client and load the best route to it
 
         Args:
             clients (List[client]): List of clients to select
         """
+        results = self.client_selection.evaluate()
         result = None
-        
-        
-        
+        for _client in results:
+            if next_route := self.get_client_route(_client, battery): 
+                self.load_route(next_route)
+                result = client
+                break
         if not result:
-            self.load_garage_route()
+            self.load_garage_route(self.get_garage_route())
             
         return result
+    
+    def get_client_route(self, _client : client, battery):
+        """_summary_
+
+        Args:
+            _client (client): _description_
+        """
+        to_client_route = route(self.map.from_intersections_to_streets(
+            self.astar.get_path(self.location.intersection2, _client.location.intersection2)))
+        client_route = route(self.map.from_intersections_to_streets(
+            self.astar.get_path(_client.location.intersection2, _client.destination.intersection2)))
+        to_garage_route = route(self.map.from_intersections_to_streets(
+            self.get_garage_route(_client.destination)))
+        
+        total_distance = to_client_route.length + client_route.length + to_garage_route.length
+        
+        if total_distance < battery:
+            return to_client_route.append(client_route)

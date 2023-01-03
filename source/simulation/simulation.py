@@ -77,7 +77,7 @@ class simulation:
     
     def car_pickup(self, car : car):
         if not car.busy and self.clients:
-            if client := car.pilot.select_client(self.clients):
+            if client := car.pilot.select_client(self.clients, car.battery):
                 self.clients.remove(client)
                 self.pickups += 1
                 self.cars_pickups[car] += 1

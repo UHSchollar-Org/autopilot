@@ -170,8 +170,7 @@ class route:
         self.length = self.get_route_length()
         self.current = 0
     
-
-
+    
     def get_route_length(self) -> float:
         """Calculate the length of the route
 
@@ -223,3 +222,13 @@ class route:
             street: Result of streets[current]
         """
         return self.streets[self.current]
+    
+    
+    def append(self, other_route : route):
+        """_summary_
+
+        Args:
+            other_route (route): _description_
+        """
+        resulting_route = route(self.streets.extend(other_route.streets))
+        return resulting_route if resulting_route.is_valid() else None
