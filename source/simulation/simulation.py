@@ -77,7 +77,7 @@ class simulation:
     
     def car_pickup(self, car : car):
         if not car.busy and self.clients:
-            if client := car.pilot.select_client(self.clients, car.battery):
+            if client := car.pilot.select_client(self.clients, car):
                 self.clients.remove(client)
                 self.pickups += 1
                 self.cars_pickups[car] += 1
@@ -97,7 +97,7 @@ class simulation:
         print("Deliveries: ", self.deliveries)
         print("Cars: ")
         for car in self.agency.cars:
-            print("Car ", car.id, " - Pickups: ", self.cars_pickups[car], " - Money: ", self.cars_money[car], " - Mantainance: ", self.cars_mantainance[car])
+            print("Car ", car, " - Pickups: ", self.cars_pickups[car], " - Money: ", self.cars_money[car], " - Mantainance: ", self.cars_mantainance[car])
         print("Next client: ", self.next_client)
     
     def run(self):

@@ -155,12 +155,13 @@ class map:
         return cost
     #endregion
     
+    @staticmethod
     def from_intersections_to_streets(intersections : List[intersection]) -> List[street]:
         """Dada una lista de intersecciones devuelve la lista de calles que forman
         """
         result : List[street] = []
         for i in range(1,len(intersections)):
-            result.append(street(intersections[i-1]),street(intersections[i]))
+            result.append(street(intersections[i-1], intersections[i]))
         return result
     
 class route:

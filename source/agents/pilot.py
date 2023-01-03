@@ -58,7 +58,7 @@ class pilot:
         else:
             self.route = _route
     
-    def get_garage_route(self, location : street):
+    def get_garage_route(self, location):
         """From the list of available garages, 
         select the closest one and load the route to it.
         """
@@ -72,16 +72,16 @@ class pilot:
             
         
             
-    def select_client(self, clients, battery):
+    def select_client(self, clients, car):
         """Select the most profitable client and load the best route to it
 
         Args:
             clients (List[client]): List of clients to select
         """
-        results = self.client_selection.evaluate()
+        results = self.client_selection.evaluate(clients, self.astar, car)
         result = None
         for _client in results:
-            if next_route := self.get_client_route(_client, battery): 
+            if next_route := self.get_client_route(_client, car.battery): 
                 self.load_route(next_route)
                 result = client
                 break
@@ -90,7 +90,7 @@ class pilot:
             
         return result
     
-    def get_client_route(self, _client : client, battery):
+    def get_client_route(self, _client, battery):
         """_summary_
 
         Args:

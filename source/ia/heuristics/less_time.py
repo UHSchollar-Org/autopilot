@@ -17,3 +17,4 @@ class less_time(heuristic):
         for _street in _map.streets:
             if _street.length > result:
                 result = _street.length
+        return result
