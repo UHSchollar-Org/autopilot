@@ -1,6 +1,7 @@
 from typing import *
 from source.tools.general_tools import *
 from source.agents.car import *
+from source.environment.traffic_signs import *
 
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -32,7 +33,7 @@ class intersection:
 
 class street:
     
-    def __init__(self, intersection1 : intersection, intersection2 : intersection, traffic_signs : List[signal]) -> None:
+    def __init__(self, intersection1 : intersection, intersection2 : intersection, traffic_signs : List[signal] = []) -> None:
         self.intersection1 = intersection1
         self.intersection2 = intersection2
         self.cars = []
@@ -131,6 +132,27 @@ class map:
         
         plt.show()
  
+    #region Cost functions
+    def distance_street_cost(self, Intersection1: intersection, intersection2: intersection):
+        return distance_from_geo_coord(Intersection1.geo_coord, intersection2.geo_coord)
+    
+    def time_street_cost(self, Intersection1: intersection, intersection2: intersection):
+        aux = street(Intersection1,intersection2)
+        cost = 1
+        traffic_signals = None
+        for _street in self.streets:
+            if _street==aux:
+                traffic_signals = _street.traffic_signs
+                break
+        
+        for traffic_signal in traffic_signals:
+            if isinstance(traffic_signal, stop):
+                cost += 1
+            if isinstance(traffic_signal, traffic_light):
+                cost += 2
+                
+        return cost
+    #endregion
     
 class route:
     
