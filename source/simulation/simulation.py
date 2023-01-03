@@ -71,33 +71,38 @@ class simulation:
         destination = randint(0, len(self.map.streets) - 1)
         self.next_client = client(self.map.streets[location], self.map.streets[destination], self.current_time + wait_time)
         
-        
-        
+    def client_to_system(self):
+        while self.next_client.request_time <= self.current_time:
+            self.clients.append(self.next_client)
+            self.generate_client()
+    
+    def car_pickup(self, car : car):
+        if not car.busy and self.clients:
+            client = car.pilot.pick_client(self.clients, self.map)
+            self.clients.remove(client)
+            self.pickups += 1
+            self.cars_pickups[car] += 1
+    
+    def charge_routes(self):
+        for car in self.agency.cars:
+            self.car_pickup(car)
+    
+    def move_cars(self):
+        for car in self.agency.cars:
+            self.map.move_car(car)
+    
     def run(self):
         while self.current_time <= self.total_time:
             
             # Generate client if there is none
             if not self.next_client:
                 self.generate_client()
-            
             # If next client is in the current time, add it to the sistem and generate a new one
-            while self.next_client.request_time <= self.current_time:
-                self.clients.append(self.next_client)
-                self.generate_client()
-            
+            self.client_to_system()
             # Charge routes for each car
-            for car in self.agency.cars:
-                # If car is free, pick up a client
-                if not car.busy:
-                    if self.clients:
-                        client = car.pilot.pick_client(self.clients, self.map)
-                        self.clients.remove(client)
-                        self.pickups += 1
-                        self.cars_pickups[car] += 1
-            
+            self.charge_routes()
             # Move cars
-            for car in self.agency.cars:
-                self.map.move_car(car)
+            self.move_cars()
             
             
     
