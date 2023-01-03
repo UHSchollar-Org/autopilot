@@ -88,9 +88,10 @@ class simulation:
             # Charge routes for each car
             for car in self.agency.cars:
                 # If car is free, pick up a client
-                if not car.client:
+                if not car.busy:
                     if self.clients:
-                        car.client = car.pilot.pick_client(self.clients)
+                        client = car.pilot.pick_client(self.clients, self.map)
+                        self.clients.remove(client)
                         self.pickups += 1
                         self.cars_pickups[car] += 1
             
