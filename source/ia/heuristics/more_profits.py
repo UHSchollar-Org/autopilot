@@ -3,30 +3,46 @@ from source.ia.heuristics.euclidean_dist import euclidean_distance
 from source.ia.astar import astar 
 from source.agents.client import client
 from source.agents.car import car
-from typing import Dict
+from typing import List
 from source.environment._map import map, route, intersection
 from source.tools.general_tools import from_intersections_to_streets
 from source.agents.agency import agency
 
 
 class more_profit(heuristic):
-    @staticmethod
-    def evaluate(self, clients : Dict[client, route], map : map, car : car, agency : agency):
-        _astar : astar = astar(intersection.distance, euclidean_distance, map.adj_dict)
-        client = clients[0]
-        cost_to_c = 0
-        cost_to_dest = 0
+    def __init__(self, clients : List[client], map : map, car : car, agency : agency, astar : astar) -> None:
+        self.clients = clients
+        self.map = map
+        self.car = car
+        self.agency = agency
+        self.astar = astar
+    
+    def get_payment(self, start : intersection, end : intersection) -> float:
+        path = self.astar.get_path(start, end)
+        return self.agency.get_payment(path)
+    
+    def get_cost(self, start : intersection, end : intersection) -> float:
+        path = self.astar.get_path(start, end)
+        return self.agency.get_cost(path)
         
-        for c in clients[1:]:
-            path_to_c = _astar.get_path(car.pilot.location.intersection2, c.location.intersection2)
-            client_to_dest = _astar.get_path(c.location.intersection2, c.destination.intersection2)
-            path_to_c = from_intersections_to_streets(path_to_c)
-            client_to_dest = from_intersections_to_streets(client_to_dest)
+    def evaluate(self):
+        client = None
+        index = 0
+        current_profit = 0
+        
+        for i, c in enumerate(self.clients):
+            cost_to_c = self.get_cost(self.car.pilot.location.intersection2, c.location.intersection2)
+            cost_to_dest = self.get_cost(c.location.intersection2, c.destination.intersection2)
+            payment = self.get_payment(c.location.intersection2, c.destination.intersection2)
             
-            cost_to_c = agency.get_cost(path_to_c)
-            cost_to_dest = agency.get_cost(client_to_dest)
-            payment = agency.get_payment(client_to_dest)
+            profit = payment - cost_to_c - cost_to_dest
             
+            if profit > current_profit:
+                current_profit = profit
+                index = i
+                client = c
+        
+        return index, client
             
             
             
