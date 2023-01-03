@@ -1,6 +1,8 @@
+from __future__ import annotations
 from typing import *
 from source.tools.general_tools import *
 from source.agents.car import *
+from source.environment.traffic_signs import *
 
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -32,7 +34,7 @@ class intersection:
 
 class street:
     
-    def __init__(self, intersection1 : intersection, intersection2 : intersection, traffic_signs : List[signal]) -> None:
+    def __init__(self, intersection1 : intersection, intersection2 : intersection, traffic_signs : List[signal] = []) -> None:
         self.intersection1 = intersection1
         self.intersection2 = intersection2
         self.cars = []
@@ -131,6 +133,35 @@ class map:
         
         plt.show()
  
+    #region Cost functions
+    def distance_street_cost(self, Intersection1: intersection, intersection2: intersection):
+        return distance_from_geo_coord(Intersection1.geo_coord, intersection2.geo_coord)
+    
+    def time_street_cost(self, Intersection1: intersection, intersection2: intersection):
+        aux = street(Intersection1,intersection2)
+        cost = 1
+        traffic_signals = None
+        for _street in self.streets:
+            if _street==aux:
+                traffic_signals = _street.traffic_signs
+                break
+        
+        for traffic_signal in traffic_signals:
+            if isinstance(traffic_signal, stop):
+                cost += 1
+            if isinstance(traffic_signal, traffic_light):
+                cost += 2
+                
+        return cost
+    #endregion
+    
+    def from_intersections_to_streets(intersections : List[intersection]) -> List[street]:
+        """Dada una lista de intersecciones devuelve la lista de calles que forman
+        """
+        result : List[street] = []
+        for i in range(1,len(intersections)):
+            result.append(street(intersections[i-1]),street(intersections[i]))
+        return result
     
 class route:
     
@@ -139,8 +170,7 @@ class route:
         self.length = self.get_route_length()
         self.current = 0
     
-
-
+    
     def get_route_length(self) -> float:
         """Calculate the length of the route
 
@@ -192,3 +222,13 @@ class route:
             street: Result of streets[current]
         """
         return self.streets[self.current]
+    
+    
+    def append(self, other_route : route):
+        """_summary_
+
+        Args:
+            other_route (route): _description_
+        """
+        resulting_route = route(self.streets.extend(other_route.streets))
+        return resulting_route if resulting_route.is_valid() else None

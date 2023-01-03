@@ -1,4 +1,3 @@
-from source.environment.map import *
 from source.agents.pilot import pilot
 from source.agents.client import client
 import configparser
