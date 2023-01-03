@@ -2,20 +2,21 @@ from source.environment._map import *
 from source.environment.traffic_signs import *
 from source.tools.general_tools import *
 from source.ia.astar import *
-from source.ia.heuristic import *
+from source.ia.heuristics.heuristic import *
+from source.ia.heuristics.euclidean_dist import *
 
 class pilot:
     
-    def __init__(self, strategy, _map : map, garages : List[street]) -> None:
+    def __init__(self, cost_function, heuristic : heuristic, _map : map, garages : List[street]) -> None:
         self.map = _map
         self.location : street = None
-        self.strategy = strategy
+        self.astar = astar(cost_function, heuristic, _map.adj_dict)
+        self.client_selection = None
         self.route : route = None
         self.trafic_signals_checked = False
         self.client : client = None
         self.client_picked_up : bool = False
         self.garages = garages
-        self.astar = astar(euclidean,self.map.adj_dict)
     
     def drive_next_loc(self) -> float:
         """The pilot checks the traffic signs and if allowed, 
