@@ -61,7 +61,17 @@ class simulation:
                 error = abs(distance - _distance)
         
         return result
+    
+    def update_vars(self, car, results):
+        self.cars_money[car] += results[1]
+        self.cars_mantainance[car] += results[0]
         
+        if results[2]:
+            self.pickups += 1
+            self.cars_pickups[car] += 1
+        
+        if results[3]:
+            self.deliveries += 1
     
     def generate_client(self) -> None:
         wait_time = round(expon.rvs(size = 1)[0])
@@ -88,7 +98,8 @@ class simulation:
     
     def move_cars(self):
         for car in self.agency.cars:
-            self.map.move_car(car)
+            results = self.map.move_car(car)
+            self.update_vars(car, results)
     
     def print_status(self):
         print("Time: ", self.current_time)

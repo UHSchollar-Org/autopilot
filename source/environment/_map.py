@@ -114,11 +114,13 @@ class map:
             _car (car): _description_
         """
         start_loc = _car.pilot.location
-        _car.move()
+        results = _car.move()
         end_loc = _car.pilot.location
         if start_loc != end_loc:
             start_loc.remove_car(_car)
             end_loc.add_car(_car)
+        
+        return results
     
     def draw_map(self):
         graph = nx.DiGraph()

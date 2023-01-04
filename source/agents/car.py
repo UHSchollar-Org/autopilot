@@ -23,6 +23,7 @@ class car:
         self.busy : bool = False
         # remainig kilometers until the car fully discharges
         self.battery : float = float(config['DEFAULT']['BATTERY'])
+        self.carge_speed : float = float(config['DEFAULT']['CHARGE_SPEED'])
     
     def get_distance_payment(self, distance : float) -> float:
         """Get the payment of a distance
@@ -60,10 +61,13 @@ class car:
     def update_battery(self, distance : float):
         self.battery -= distance
     
-    def move(self) -> None:
+    def move(self):
         """Move the car according to the route given by the pilot
         """
-        distance_driven = self.pilot.drive_next_loc()
+        results = self.pilot.drive_next_loc()
+        distance_driven = results[0]
+        picked_up = results[1]
+        dropped_off = results[2]
         
         self.update_odometer(distance_driven)
         self.update_taximeter(distance_driven)
@@ -71,6 +75,8 @@ class car:
         self.update_battery(distance_driven)
         
         self.taximeter = 0 if not self.pilot.client_picked_up else self.taximeter
+        
+        return [distance_driven, self.get_distance_payment(distance_driven), picked_up, dropped_off]
 
     def __str__(self) -> str:
         return f'<car {self.id}>'
