@@ -53,7 +53,7 @@ class pilot:
             return 0
 
     def load_route(self, _route):
-        if _route.peek() != self.location:
+        if _route.peek().intersection1 != self.location.intersection2:
             raise Exception('Pilot cannot load a route that does not start at its location')
         else:
             self.route = _route
