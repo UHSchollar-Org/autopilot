@@ -130,6 +130,11 @@ class simulation:
             self.print_status()
             
             self.current_time += 1
+            
+            self.map.draw_map()
+            
+            
+    
         
         results = {"delivers" : self.deliveries, "cars_pickups" : self.cars_pickups, "cars_money" : self.cars_money, "cars_mantainance" : self.cars_mantainance}
         return results

@@ -130,7 +130,7 @@ class map:
             pos[_street.intersection2] = _street.intersection2.geo_coord
             graph.add_edge(_street.intersection1,_street.intersection2)
             
-        subax1 = plt.subplot(121)
+        #subax1 = plt.subplot(121)
         nx.draw(graph, pos=pos,  with_labels=True, font_weight='bold')
         
         plt.show()
