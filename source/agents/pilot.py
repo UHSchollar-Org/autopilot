@@ -34,7 +34,7 @@ class pilot:
                     if isinstance(_signal, stop):
                         return 0
             driven_distance = self.location.length
-            self.location = next(self.route)
+            self.location = self.map.streets[self.map.streets.index(next(self.route))]
             #If the taxi is at the client's location then it picks them up
             if self.client and self.location == self.client.location:
                 self.client_picked_up = True

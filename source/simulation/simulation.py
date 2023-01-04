@@ -117,5 +117,7 @@ class simulation:
             
             self.current_time += 1
             
+            self.map.draw_map()
+            
             
     
