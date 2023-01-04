@@ -98,8 +98,11 @@ class simulation:
         print("Cars: ")
         for car in self.agency.cars:
             print("Car ", car, " - Pickups: ", self.cars_pickups[car], " - Money: ", self.cars_money[car], " - Mantainance: ", self.cars_mantainance[car])
+            print("Location: ", car.pilot.location)
+            print("------------------------------------------------------------")
         print("Next client: ", self.next_client)
-    
+        print("======================================================================")
+
     def run(self):
         while self.current_time <= self.total_time:
             
@@ -121,3 +124,6 @@ class simulation:
             
             
     
+        
+        results = {"delivers" : self.deliveries, "cars_pickups" : self.cars_pickups, "cars_money" : self.cars_money, "cars_mantainance" : self.cars_mantainance}
+        return results

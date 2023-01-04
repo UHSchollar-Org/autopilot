@@ -8,12 +8,13 @@ config.read('source/agents/car.ini')
 class car:
     """
     """
-    def __init__(self, _pilot : pilot) -> None:
+    def __init__(self, id : int,  _pilot : pilot) -> None:
         """Initialization of the CAR class
 
         Args:
             _pilot (pilot): Pilot is in charge of driving the car and establishing the route
         """
+        self.id = id
         self.taximeter = 0
         self.distance_price = float(config['DEFAULT']['DISTANCE_PRICE'])
         self.distance_cost = float(config['DEFAULT']['DISTANCE_COST'])
@@ -45,11 +46,31 @@ class car:
         """
         return distance * self.distance_cost
     
+    def update_taximeter(self, distance : float) -> None:
+        if self.pilot.client_picked_up:
+            self.taximeter += self.get_distance_payment(distance)
+        
+    
+    def update_odometer(self, distance : float) -> None:
+        self.odometer += distance
+    
+    def check_busy(self) -> None:
+        self.busy = self.pilot.route != None
+    
+    def update_battery(self, distance : float):
+        self.battery -= distance
+    
     def move(self) -> None:
         """Move the car according to the route given by the pilot
         """
         distance_driven = self.pilot.drive_next_loc()
-        self.odometer += distance_driven
-        if self.busy:
-            self.taximeter += self.get_distance_payment(distance_driven)
-        self.busy = self.pilot.client_picked_up
+        
+        self.update_odometer(distance_driven)
+        self.update_taximeter(distance_driven)
+        self.check_busy()
+        self.update_battery(distance_driven)
+        
+        self.taximeter = 0 if not self.pilot.client_picked_up else self.taximeter
+
+    def __str__(self) -> str:
+        return f'<car {self.id}>'

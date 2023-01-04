@@ -15,10 +15,14 @@ a.run_test()"""
 map1 = rd.map_from_json('Vedado')
 heuristic = less_time(map1)
 client_selector = more_profit()
-pilot1 = pilot(map1.time_street_cost, heuristic, client_selector, map1, [map1.streets[0]])
-car1 = car(pilot1)
+garages = [map1.streets[0]]
+pilot1 = pilot(map1.time_street_cost, heuristic, client_selector, map1, garages)
+pilot2 = pilot(map1.time_street_cost, heuristic, client_selector, map1, garages)
+car1 = car(1,pilot1)
+car2 = car(2, pilot2)
 map1.add_car(car1,map1.streets[0])
-agency1 = agency([car1],[map1.streets[0]])
+map1.add_car(car2, map1.streets[0])
+agency1 = agency([car1, car2],[map1.streets[0]])
 _simulation = simulation(map1,agency1, 50)
 
 _simulation.run()
