@@ -38,10 +38,9 @@ class pilot:
             #If the taxi is at the client's location then it picks them up
             if self.client and self.location == self.client.location:
                 self.client_picked_up = True
-                """Aqui calculamos la ruta hacia el destino del cliente"""
                 
             #If the taxi is at the client's destination location then it leaves it
-            if self.client and self.location == self.client.destination:
+            if self.client_picked_up and self.location == self.client.destination:
                 self.client_picked_up = False
                 self.client = None
             #As the taxi is on a new street so it haven't checked the signs for this location
@@ -86,6 +85,7 @@ class pilot:
             if next_route := self.get_client_route(_client, car.battery): 
                 self.load_route(next_route)
                 result = _client
+                self.client = _client
                 break
         if not result:
             self.load_route(self.get_garage_route(car.pilot.location))
