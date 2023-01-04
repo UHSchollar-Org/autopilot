@@ -59,6 +59,7 @@ class pilot:
             self.route = _route
     
     def get_garage_route(self, location):
+        from source.environment._map import route
         """From the list of available garages, 
         select the closest one and load the route to it.
         """
@@ -81,16 +82,18 @@ class pilot:
         results = self.client_selection.evaluate(clients, self.astar, car)
         result = None
         for _client in results:
+            _client = _client[0]
             if next_route := self.get_client_route(_client, car.battery): 
                 self.load_route(next_route)
-                result = client
+                result = _client
                 break
         if not result:
-            self.load_garage_route(self.get_garage_route())
+            self.load_route(self.get_garage_route(car.pilot.location))
             
         return result
     
     def get_client_route(self, _client, battery):
+        from source.environment._map import route
         """_summary_
 
         Args:
@@ -100,8 +103,7 @@ class pilot:
             self.astar.get_path(self.location.intersection2, _client.location.intersection2)))
         client_route = route(self.map.from_intersections_to_streets(
             self.astar.get_path(_client.location.intersection2, _client.destination.intersection2)))
-        to_garage_route = route(self.map.from_intersections_to_streets(
-            self.get_garage_route(_client.destination)))
+        to_garage_route = self.get_garage_route(_client.destination)
         
         total_distance = to_client_route.length + client_route.length + to_garage_route.length
         

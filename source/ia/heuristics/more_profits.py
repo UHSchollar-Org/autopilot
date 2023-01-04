@@ -19,23 +19,19 @@ class more_profit(heuristic):
         return car.get_distance_cost(sum(s.length for s in path))
         
     def evaluate(self, clients : List[client],  astar : astar, car : car):
-        client = None
-        index = 0
-        current_profit = 0
-        
-        for i, c in enumerate(clients):
+        sorted_clients = []
+        for c in clients:
             cost_to_c = self.get_cost(car.pilot.location.intersection2, c.location.intersection2, astar, car)
             cost_to_dest = self.get_cost(c.location.intersection2, c.destination.intersection2, astar, car)
             payment = self.get_payment(c.location.intersection2, c.destination.intersection2, astar, car)
             
             profit = payment - cost_to_c - cost_to_dest
             
-            if profit > current_profit:
-                current_profit = profit
-                index = i
-                client = c
+            sorted_clients.append((c, profit))
         
-        return client, index
+        sorted_clients.sort(key=lambda x: x[1], reverse=True)
+
+        return sorted_clients
             
             
             

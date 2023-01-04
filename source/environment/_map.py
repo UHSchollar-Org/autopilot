@@ -167,7 +167,7 @@ class map:
 class route:
     
     def __init__(self, streets : List[street]) -> None:
-        self.streets : List[street] = streets
+        self.streets : List[street] = streets if streets else []
         self.length = self.get_route_length()
         self.current = 0
     
@@ -180,8 +180,11 @@ class route:
             int: Length of the route in meters
         """
         distance_sum = 0
-        for _street in self.streets:
-            distance_sum += _street.length
+        try:
+            for _street in self.streets:
+                distance_sum += _street.length
+        except:
+            pass
         return distance_sum
     
     def is_valid(self) -> bool:
@@ -231,5 +234,6 @@ class route:
         Args:
             other_route (route): _description_
         """
-        resulting_route = route(self.streets.extend(other_route.streets))
+        streets = self.streets + other_route.streets
+        resulting_route = route(streets)
         return resulting_route if resulting_route.is_valid() else None
