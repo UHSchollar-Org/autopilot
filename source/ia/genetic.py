@@ -1,4 +1,4 @@
-from numpy.random import randint
+from numpy.random import randint, random
 from source.simulation.simulation import simulation
 from source.tools.reader import map_from_json
 from typing import Dict, Any, List
@@ -19,11 +19,7 @@ class genetic_algorithm:
         self.generations_c: int = generations_c
     
     def create_individual(self) -> simulation:
-        """_summary_
-        """
-        
-        
-        sim = simulation(map_from_json("Map"), [], [], self.simulations_steps)
+        return simulation(map_from_json("Map"), [], [], self.simulations_steps)
     
     def create_population(self) -> List[simulation]:
         population: List[simulation] = []
@@ -37,22 +33,36 @@ class genetic_algorithm:
         pass
     
     def selection(self, population: List[simulation]) -> List[simulation]:
-        new_population: List[simulation] = []
+        selection = [(individual, self.fitness(individual)) for individual in population]
+        selection = [individual for individual in sorted(selection, key=lambda x: x[1], reverse=True)]
+        selection = selection[:self.selection_c]
+        return selection
         
+    def crossover(self, population, selection) -> List[simulation]:
+        pass
+    
+    def mutate(self, individual) -> simulation:
+        if random() < self.mutation_rate:
+            pass # aqui lo mutamos
         
+        return individual
     
-    def crossover(self):
-        pass
+    def mutation(self, population) -> List[simulation]:
+        for i in range(len(population)):
+            population[i] = self.mutate(population[i])
+        
+        return population
     
-    def mutation(self):
-        pass
+    def breed(self, population, selection) -> List[simulation]:
+        population = self.crossover(population, selection)
+        population = self.mutation(population)
+        return population
     
-    def breed(self):
-        pass
-    
-    def evolve(self):
-        pass
-    
-    def run(self):
-        pass
-    
+    def run(self) -> List[simulation]:
+        population = self.create_population()
+        
+        for _ in range(self.generations_c):
+            selection = self.selection(population)
+            population = self.breed(population, selection)
+        
+        return population
