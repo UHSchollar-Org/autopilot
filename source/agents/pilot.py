@@ -37,6 +37,7 @@ class pilot:
                     
             driven_distance = self.location.length
             self.location = self.map.streets[self.map.streets.index(next(self.route))]
+            self.trafic_signals_checked = False
             #If the taxi is at the client's location then it picks them up
             if self.client and self.location == self.client.location:
                 self.client_picked_up = True
@@ -69,8 +70,9 @@ class pilot:
         """
         nearest_garage : route = None
         for garage in self.garages:
-            intersections = self.astar.get_path(location.intersection2, garage.intersection2)
-            garage_route = route(self.map.from_intersections_to_streets(intersections))
+            intersections = self.astar.get_path(location.intersection2, garage.intersection1)
+            garage_route = route(self.map.from_intersections_to_streets(intersections)).append(route([garage]))
+            
             if not nearest_garage or nearest_garage.length == garage_route.length:
                 nearest_garage = garage_route
         return nearest_garage
@@ -105,9 +107,15 @@ class pilot:
             _client (client): _description_
         """
         to_client_route = route(self.map.from_intersections_to_streets(
-            self.astar.get_path(self.location.intersection2, _client.location.intersection2)))
+            self.astar.get_path(self.location.intersection2, _client.location.intersection1)))
+        
+        to_client_route = to_client_route.append(route([_client.location]))
+        
         client_route = route(self.map.from_intersections_to_streets(
-            self.astar.get_path(_client.location.intersection2, _client.destination.intersection2)))
+            self.astar.get_path(_client.location.intersection2, _client.destination.intersection1)))
+
+        client_route = client_route.append(route([_client.destination]))
+        
         to_garage_route = self.get_garage_route(_client.destination)
         
         total_distance = to_client_route.length + client_route.length + to_garage_route.length

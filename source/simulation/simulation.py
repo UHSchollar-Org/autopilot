@@ -34,6 +34,8 @@ class simulation:
         self.cars_money : Dict[car, float] = {c : 0 for c in self.agency.cars}
         # total of mantainance spent for each car
         self.cars_mantainance : Dict[car, float] = {c : 0 for c in self.agency.cars}
+        # total of kilometer traveled for each car
+        self.cars_kms : Dict[car, float] = {c : 0 for c in self.agency.cars}
         
         #endregion
     
@@ -63,8 +65,8 @@ class simulation:
         return result
     
     def update_vars(self, car, results):
-        self.cars_money[car] += results[1]
-        self.cars_mantainance[car] += results[0]
+        self.cars_mantainance[car] += results[0]*car.distance_cost
+        self.cars_kms[car] += results[0]/1000
         
         if results[2]:
             self.pickups += 1
@@ -72,6 +74,7 @@ class simulation:
         
         if results[3]:
             self.deliveries += 1
+            self.cars_money[car] += results[1]
     
     def generate_client(self) -> None:
         wait_time = round(expon.rvs(size = 1)[0])
@@ -89,8 +92,7 @@ class simulation:
         if not car.busy and self.clients:
             if client := car.pilot.select_client(self.clients, car):
                 self.clients.remove(client)
-                self.pickups += 1
-                self.cars_pickups[car] += 1
+                
     
     def charge_routes(self):
         for car in self.agency.cars:
@@ -108,7 +110,7 @@ class simulation:
         print("Deliveries: ", self.deliveries)
         print("Cars: ")
         for car in self.agency.cars:
-            print("Car ", car, " - Pickups: ", self.cars_pickups[car], " - Money: ", self.cars_money[car], " - Mantainance: ", self.cars_mantainance[car])
+            print("Car ", car, " - Pickups: ", self.cars_pickups[car], " - Money: ", round(self.cars_money[car],3), " - Mantainance: ", round(self.cars_mantainance[car],3), " - Kms: ", round(self.cars_kms[car],3))
             print("Location: ", car.pilot.location)
             print("------------------------------------------------------------")
         print("Next client: ", self.next_client)
@@ -131,7 +133,7 @@ class simulation:
             
             self.current_time += 1
             
-            self.map.draw_map()
+            #self.map.draw_map()
             
             
     

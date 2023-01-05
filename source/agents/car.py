@@ -74,9 +74,11 @@ class car:
         self.check_busy()
         self.update_battery(distance_driven)
         
+        ret = [distance_driven, self.taximeter, picked_up, dropped_off]
+        
         self.taximeter = 0 if not self.pilot.client_picked_up else self.taximeter
         
-        return [distance_driven, self.get_distance_payment(distance_driven), picked_up, dropped_off]
+        return ret
 
     def __str__(self) -> str:
         return f'<car {self.id}>'

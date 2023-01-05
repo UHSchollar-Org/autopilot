@@ -3,7 +3,7 @@ from source.ia.astar import astar
 from source.agents.client import client
 from source.agents.car import car
 from typing import List
-from source.environment._map import intersection, map
+from source.environment._map import intersection, map, street
 
 
 class more_profit(heuristic):
@@ -21,9 +21,14 @@ class more_profit(heuristic):
     def evaluate(self, clients : List[client],  astar : astar, car : car):
         sorted_clients = []
         for c in clients:
-            cost_to_c = self.get_cost(car.pilot.location.intersection2, c.location.intersection2, astar, car)
-            cost_to_dest = self.get_cost(c.location.intersection2, c.destination.intersection2, astar, car)
-            payment = self.get_payment(c.location.intersection2, c.destination.intersection2, astar, car)
+            cost_to_c = self.get_cost(car.pilot.location.intersection2, c.location.intersection1, astar, car)
+            cost_to_dest = self.get_cost(c.location.intersection2, c.destination.intersection1, astar, car)
+            payment = self.get_payment(c.location.intersection2, c.destination.intersection1, astar, car)
+            
+            # here we add the last street
+            cost_to_c += car.get_distance_cost(street(c.location.intersection1, c.location.intersection2).length)
+            cost_to_dest += car.get_distance_cost(street(c.destination.intersection1, c.destination.intersection2).length)
+            cost_to_c += car.get_distance_payment(street(c.destination.intersection1, c.destination.intersection2).length)
             
             profit = payment - cost_to_c - cost_to_dest
             
