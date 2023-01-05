@@ -17,3 +17,6 @@ class client:
     
     def __le__(self, other : client):
         return self.request_time <= other.request_time
+    
+    def __str__(self) -> str:
+        return f'Location: {self.location} - Destination: {self.destination}'
