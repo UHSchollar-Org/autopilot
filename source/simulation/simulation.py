@@ -2,7 +2,6 @@ from source.environment._map import map, street, intersection
 from source.tools.general_tools import distance_from_geo_coord
 from source.agents.car import car
 from source.agents.client import client
-from source.agents.agency import agency
 from typing import List, Dict
 from scipy.stats import expon, lognorm
 from random import randint
@@ -10,9 +9,10 @@ from random import randint
 import numpy as np
 
 class simulation:
-    def __init__(self, map : map, agency : agency, steps : int) -> None:
+    def __init__(self, map : map, cars : List[car], garages : List[street], steps : int) -> None:
         self.map = map
-        self.agency = agency
+        self.cars = cars
+        self.garages = garages
         
         self.next_client : client = None
         # List of clients in the sistem
@@ -29,13 +29,13 @@ class simulation:
         # total clients delivered
         self.deliveries = 0
         # total of pickups for each car
-        self.cars_pickups : Dict[car, int] = {c : 0 for c in self.agency.cars}
+        self.cars_pickups : Dict[car, int] = {c : 0 for c in self.cars}
         # total of money for each car
-        self.cars_money : Dict[car, float] = {c : 0 for c in self.agency.cars}
+        self.cars_money : Dict[car, float] = {c : 0 for c in self.cars}
         # total of mantainance spent for each car
-        self.cars_mantainance : Dict[car, float] = {c : 0 for c in self.agency.cars}
+        self.cars_mantainance : Dict[car, float] = {c : 0 for c in self.cars}
         # total of kilometer traveled for each car
-        self.cars_kms : Dict[car, float] = {c : 0 for c in self.agency.cars}
+        self.cars_kms : Dict[car, float] = {c : 0 for c in self.cars}
         
         #endregion
     
@@ -93,7 +93,6 @@ class simulation:
             if client := car.pilot.select_client(self.clients, car):
                 self.clients.remove(client)
                 
-    
     def charge_routes(self):
         for car in self.agency.cars:
             self.car_pickup(car)
