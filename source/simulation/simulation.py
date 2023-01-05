@@ -9,8 +9,9 @@ from random import randint
 import numpy as np
 
 class simulation:
-    def __init__(self, map : map, cars : List[car], garages : List[street], steps : int) -> None:
+    def __init__(self, map : map, cars : List[car], cars_count: int, garages : List[street], steps : int) -> None:
         self.map = map
+        self.cars_count = cars_count
         self.cars = cars
         self.garages = garages
         
