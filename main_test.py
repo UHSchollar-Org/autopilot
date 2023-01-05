@@ -26,8 +26,8 @@ pilot2 = pilot(map1.distance_street_cost, heuristic2, client_selector, map1, gar
 car1 = car(1,pilot1)
 car2 = car(2, pilot2)
 map1.add_car(car1,map1.streets[0])
-map1.add_car(car2, map1.streets[0])
+#map1.add_car(car2, map1.streets[0])
 
-_simulation = simulation(map1, [car1,car2], garages, 500)
+_simulation = simulation(map1, [car1], garages, 50)
 
 _simulation.run()

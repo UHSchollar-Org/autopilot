@@ -22,7 +22,8 @@ class car:
         self.pilot = _pilot
         self.busy : bool = False
         # remainig kilometers until the car fully discharges
-        self.battery : float = float(config['DEFAULT']['BATTERY'])
+        self.battery_capacity : float = float(config['DEFAULT']['BATTERY'])
+        self.battery : float = self.battery_capacity
         self.carge_speed : float = float(config['DEFAULT']['CHARGE_SPEED'])
     
     def get_distance_payment(self, distance : float) -> float:
@@ -60,6 +61,12 @@ class car:
     
     def update_battery(self, distance : float):
         self.battery -= distance
+        if self.pilot.charging:
+            new_battery_status = self.battery + self.carge_speed
+            self.battery = new_battery_status if new_battery_status <= self.battery_capacity else self.battery_capacity
+            if self.battery == self.battery_capacity:
+                self.pilot.charging = False
+            
     
     def move(self):
         """Move the car according to the route given by the pilot

@@ -89,16 +89,16 @@ class simulation:
             self.generate_client()
     
     def car_pickup(self, car : car):
-        if not car.busy and self.clients:
+        if not car.busy and not car.pilot.charging and self.clients:
             if client := car.pilot.select_client(self.clients, car):
                 self.clients.remove(client)
                 
     def charge_routes(self):
-        for car in self.agency.cars:
+        for car in self.cars:
             self.car_pickup(car)
     
     def move_cars(self):
-        for car in self.agency.cars:
+        for car in self.cars:
             results = self.map.move_car(car)
             self.update_vars(car, results)
     
@@ -108,7 +108,7 @@ class simulation:
         print("Pickups: ", self.pickups)
         print("Deliveries: ", self.deliveries)
         print("Cars: ")
-        for car in self.agency.cars:
+        for car in self.cars:
             print("Car ", car, " - Pickups: ", self.cars_pickups[car], " - Money: ", round(self.cars_money[car],3), " - Mantainance: ", round(self.cars_mantainance[car],3), " - Kms: ", round(self.cars_kms[car],3))
             print("Location: ", car.pilot.location)
             print("------------------------------------------------------------")

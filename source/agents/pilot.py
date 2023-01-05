@@ -17,6 +17,8 @@ class pilot:
         self.client : client = None
         self.client_picked_up : bool = False
         self.garages = garages
+        self.garage_route = True
+        self.charging = False
     
     def drive_next_loc(self) -> list:
         """The pilot checks the traffic signs and if allowed, 
@@ -24,7 +26,7 @@ class pilot:
         it remains in its location.
 
         Returns:
-            list: Distance_driven, if client was picked up, if client was dropped off
+            list: [float : Distance_driven, bool : if client was picked up, bool : if client was dropped off]
         """
         
         try:
@@ -37,7 +39,10 @@ class pilot:
                     
             driven_distance = self.location.length
             self.location = self.map.streets[self.map.streets.index(next(self.route))]
+            
+            #As the taxi is on a new street so it haven't checked the signs for this location
             self.trafic_signals_checked = False
+            
             #If the taxi is at the client's location then it picks them up
             if self.client and self.location == self.client.location:
                 self.client_picked_up = True
@@ -47,14 +52,16 @@ class pilot:
             if self.client_picked_up and self.location == self.client.destination:
                 self.client_picked_up = False
                 self.client = None
+                self.route = None
                 return [driven_distance, False, True]
             
-            #As the taxi is on a new street so it haven't checked the signs for this location
-            self.trafic_signals_checked = False
-            
+            #If taxi is at garage's location then starts charging
+            if self.garage_route and self.location == self.route.destination:
+                self.charging = True
+                self.route = None
+                     
             return [driven_distance, False, False]
         except:
-            self.route = None
             return [0, False, False]
 
     def load_route(self, _route):
@@ -96,6 +103,7 @@ class pilot:
                 break
         if not result:
             self.load_route(self.get_garage_route(car.pilot.location))
+            self.garage_route = True
             
         return result
     

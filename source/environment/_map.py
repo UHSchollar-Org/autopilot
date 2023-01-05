@@ -169,9 +169,11 @@ class map:
 class route:
     
     def __init__(self, streets : List[street]) -> None:
-        self.streets : List[street] = streets if streets else []
+
+        self.streets = streets 
         self.length = self.get_route_length()
         self.current = 0
+        self.destination : street = streets[-1] if self.streets != [] else None
     
     
     def get_route_length(self) -> float:
