@@ -57,7 +57,7 @@ class genetic_algorithm:
         total_earnings = []
         total_manteinance_cost = []
         
-        for _ in range(1):
+        for _ in range(30):
             individual.reset()
             simulation_results = individual.run()
             
@@ -163,7 +163,8 @@ class genetic_algorithm:
         for i in range(self.generations_c):
             selection = self.selection(population)
             population = self.breed(selection)
-            print(i)
+            
+            print(f"Generation {i} done")
             
         population = self.selection(population)
         

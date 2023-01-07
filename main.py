@@ -16,9 +16,34 @@ sim_data = {
 }
 sim_data['garages'] = get_garages_loc(_map, sim_data['garages'])
 
-ga = genetic_algorithm(50, 10, 0.2, 5, sim_data)
+def main():
+    print(" ")
+    print("Please, enter the parameters for execute the genetic algorithm in the next format:")
+    print(f"Parameters: simulations_steps, population_size, mutation_rate, algorithm_generations")
+    print("=======================================================================================")
+    #read parameters from console
+    _input = input()
+    _input = _input.split(',')
 
-best_vars = ga.run()
+    sim_steps = int(_input[0])
+    population_size = int(_input[1])
+    mutation_rate = float(_input[2])
+    generations = int(_input[3])
+    
+    #create the genetic algorithm
+    gen = genetic_algorithm(sim_steps, population_size, mutation_rate, generations, sim_data)
+    
+    result = gen.run()
+    
+    print("Genetic algorithm result: ")
+    
+    for key in result:
+        print(f'Strategy: {key} - Cars using strategy: {result[key]}')
+    
+    print("Total cars: ", sum(result.values()))
 
-for key in best_vars:
-    print(key,' : ', best_vars[key])
+    print("End of the genetic algorithm")
+    print("=======================================================================================")
+
+if __name__ == '__main__':
+    main()
