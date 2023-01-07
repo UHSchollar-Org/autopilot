@@ -1,12 +1,12 @@
 from source.ia.heuristics.heuristic import heuristic
 from source.environment._map import *
-from source.tools.general_tools import distance_from_geo_coord
+
 from typing import List
 import random as rd
 import numpy as np
 
 class k_means(heuristic):
-    def evaluate(self, intersections : List[intersection], cluster_count : int, max_iterations : int) -> List[intersection]:
+    def evaluate(self, intersections : List, cluster_count : int, max_iterations : int) -> List:
         """The K-means algorithm is a simple and classical distance-based clustering algorithm. It uses the distance as a similarity 
         evaluation index, that is, the closer the distance between two objects, the similar the higher the degree.
 
@@ -49,13 +49,14 @@ class k_means(heuristic):
         for _ in range(self.cluster_count):
             self.clusters.append([])
             
-    def assigning_cluster(self, intersections : List[intersection]):
+    def assigning_cluster(self, intersections : List):
         """Each node is assigned to the partition that has 
         the centroid with the least distance.
 
         Args:
             intersections (List[intersection]): Nodes to analyze
         """
+        from source.tools.general_tools import distance_from_geo_coord
         cluster_change = False
         self.init_clusters()
         for intersection in intersections:
@@ -74,7 +75,7 @@ class k_means(heuristic):
                 self.clusters[best_cluster].append(intersection)
         self.cluster_changed = cluster_change
         
-    def get_random_centroids(self, intersections : List[intersection]) -> List[intersection]:
+    def get_random_centroids(self, intersections : List) -> List:
         """Generate the first k random centroids
 
         Args:
@@ -96,7 +97,7 @@ class k_means(heuristic):
                     centroids.append(new_centroid)
         return centroids
     
-    def recalculate_centroids(self) -> List[intersection]:
+    def recalculate_centroids(self) -> List:
         """Analyze the new centroids of the clusters
 
         Returns:
@@ -114,9 +115,10 @@ class k_means(heuristic):
             new_centroids.append(self.nearest_intersection(centroid_coord,cluster))
         return new_centroids
     
-    def nearest_intersection(self, coordenates : tuple, cluster : List[intersection]) -> intersection:
+    def nearest_intersection(self, coordenates : tuple, cluster : List):
         """Given a tuple of geographic coordinates, returns the nearest map node.
         """
+        from source.tools.general_tools import distance_from_geo_coord
         lower_distance = np.inf
         nearest_intersection = None
         
@@ -128,7 +130,7 @@ class k_means(heuristic):
                 
         return nearest_intersection
     
-    def check_centroid_change(self, new_centroids : List[intersection]) -> bool:
+    def check_centroid_change(self, new_centroids : List) -> bool:
         """Check if in the last iteration there was any centroid change
 
         Args:
