@@ -94,6 +94,13 @@ class map:
             self.streets.append(_street)
             self.adj_dict[inter1].append(inter2)
     
+    def get_longest_street(self):
+        result = 0
+        for _street in self.streets:
+            if _street.length > result:
+                result = _street.length
+        return result
+    
     def add_car(self, _car : car, location : street):
         """Add the given car to the guiven street
 
@@ -136,7 +143,8 @@ class map:
         plt.show()
  
     #region Cost functions
-    def distance_street_cost(self, Intersection1: intersection, intersection2: intersection):
+    @staticmethod
+    def distance_street_cost(Intersection1: intersection, intersection2: intersection):
         return distance_from_geo_coord(Intersection1.geo_coord, intersection2.geo_coord)
     
     def time_street_cost(self, Intersection1: intersection, intersection2: intersection):

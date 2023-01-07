@@ -1,18 +1,23 @@
-from source.environment._map import map, street, intersection
+from source.environment._map import map, street
 from source.tools.general_tools import distance_from_geo_coord
 from source.agents.car import car
 from source.agents.client import client
 from typing import List, Dict
 from scipy.stats import expon, lognorm
 from random import randint
+from copy import deepcopy
 
 import numpy as np
 
 class simulation:
-    def __init__(self, map : map, cars : List[car], garages : List[street], steps : int) -> None:
-        self.map = map
-        self.cars = cars
-        self.garages = garages
+    def __init__(self, map : map, cars : List[car], cars_count: int, garages : List[street], steps : int) -> None:
+        self.map = deepcopy(map)
+        self.cars_count = cars_count
+        self.cars = deepcopy(cars)
+        self.garages = self.clone_garages(map, garages)
+        self.reset_cars()
+        self.reset_streets()
+        self.add_cars_to_map()
         
         self.next_client : client = None
         # List of clients in the sistem
@@ -39,6 +44,35 @@ class simulation:
         
         #endregion
     
+    @staticmethod
+    def clone_garages(map, garages: List[street]) -> List[street]:
+        new_garages = []
+        for street in map.streets:
+            if street in garages:
+                new_garages.append(street)
+        
+        return new_garages
+    
+    def add_cars_to_map(self):
+        cars_per_garage = self.cars_count // len(self.garages)
+        
+        cars_added = 0
+        start_index = 0
+        for g,garage in enumerate(self.garages):
+            for i in range(start_index, len(self.cars)):
+                self.map.add_car(self.cars[i], garage)
+                cars_added += 1
+                
+                if g == len(self.garages) - 1:
+                    continue
+                
+                if cars_added == cars_per_garage:
+                    cars_added = 0
+                    start_index = i+1
+                    break
+        
+        
+        
     def clients_in_movement(self) -> int:
         return self.pickups - self.deliveries
 
@@ -115,6 +149,29 @@ class simulation:
         print("Next client: ", self.next_client)
         print("======================================================================")
 
+    def reset_streets(self):
+        for street in self.map.streets:
+            street.cars = []
+    
+    def reset_cars(self):
+        for car in self.cars:
+            car.reset()
+            car.pilot.map = self.map   
+    
+    def reset(self):
+        self.current_time = 0
+        self.pickups = 0
+        self.deliveries = 0
+        self.cars_pickups = {c : 0 for c in self.cars}
+        self.cars_money = {c : 0 for c in self.cars}
+        self.cars_mantainance = {c : 0 for c in self.cars}
+        self.cars_kms = {c : 0 for c in self.cars}
+        self.next_client = None
+        self.clients = []
+        
+        self.reset_streets()
+        self.add_cars_to_map()
+    
     def run(self):
         while self.current_time <= self.total_time:
             
@@ -128,14 +185,15 @@ class simulation:
             # Move cars
             self.move_cars()
             # Print simulation status
-            self.print_status()
+            #self.print_status()
             
             self.current_time += 1
             
             #self.map.draw_map()
             
-            
-    
+        results = {
+                    "cars_pickups" : self.cars_pickups, 
+                    "cars_money" : self.cars_money, 
+                    "cars_manteinance" : self.cars_mantainance}
         
-        results = {"delivers" : self.deliveries, "cars_pickups" : self.cars_pickups, "cars_money" : self.cars_money, "cars_mantainance" : self.cars_mantainance}
         return results
