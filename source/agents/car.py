@@ -25,6 +25,17 @@ class car:
         self.battery : float = float(config['DEFAULT']['BATTERY'])
         self.carge_speed : float = float(config['DEFAULT']['CHARGE_SPEED'])
     
+    def reset(self):
+        self.taximeter = 0
+        self.taximeter = 0
+        self.odometer = 0
+        self.busy : bool = False
+        self.battery : float = float(config['DEFAULT']['BATTERY'])
+        self.pilot.client = None
+        self.pilot.client_picked_up = False
+        self.pilot.location = None
+        self.pilot.route = None
+    
     def get_distance_payment(self, distance : float) -> float:
         """Get the payment of a distance
 
