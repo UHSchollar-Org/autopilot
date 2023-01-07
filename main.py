@@ -25,6 +25,8 @@ def main():
     _input = input()
     _input = _input.split(',')
 
+    print(" ")
+    
     sim_steps = int(_input[0])
     population_size = int(_input[1])
     mutation_rate = float(_input[2])
@@ -35,6 +37,7 @@ def main():
     
     result = gen.run()
     
+    print(" ")
     print("Genetic algorithm result: ")
     
     for key in result:
