@@ -9,6 +9,8 @@ from source.pilot_dsl.builtins.pilang_callable import pilang_callable
 from source.pilot_dsl.builtins.pilang_func import pilang_func
 from source.pilot_dsl.builtins.pilang_instance import pilang_instance
 from source.pilot_dsl.builtins.pilang_class import pilang_class
+from source.simulation.simulation import simulation
+from source.pilot_dsl.builtins.pilang_sim import pilang_sim
 from structlog import get_logger
 
 log = get_logger()
@@ -19,6 +21,8 @@ class interpreter(exp_visitor, stmt_visitor):
         self.globals = scope()
         self.scope = self.globals
         self.locals = {}
+        
+        self.globals.define('simulation', pilang_sim())
         
     #region others_methods
     
@@ -315,7 +319,7 @@ class interpreter(exp_visitor, stmt_visitor):
         try:
             res = None
             for stmt in statements:
-                log.debug("Executing", stmt)
+                #log.debug("Executing", stmt)
                 res = self.execute(stmt)
             
             #return res #for testing and debugging
