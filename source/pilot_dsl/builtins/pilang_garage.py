@@ -10,6 +10,8 @@ class pilang_gar(pilang_callable):
         return 1
     
     def call(self, interpreter, arguments: List[Any]):
-        if not isinstance(arguments[0], int):
-            raise runtime_error(arguments[0], f'{arguments[0]} most be an integer')
-        return get_garages_loc(map_from_json("Map"), arguments[0])
+        #TODO Resolve runtime_error problem
+        """if not isinstance(arguments[0], int):
+            raise runtime_error(arguments[0], f'{arguments[0]} most be an integer')"""
+        self.garages = get_garages_loc(map_from_json("Map"), int(arguments[0]))
+        return self

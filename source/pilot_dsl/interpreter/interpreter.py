@@ -10,9 +10,9 @@ from source.pilot_dsl.builtins.pilang_func import pilang_func
 from source.pilot_dsl.builtins.pilang_instance import pilang_instance
 from source.pilot_dsl.builtins.pilang_class import pilang_class
 from source.pilot_dsl.builtins.pilang_sim import pilang_sim
-from source.pilot_dsl.builtins.pilang_strat import pilang_strat
 from source.pilot_dsl.builtins.pilang_car import pilang_car
 from source.pilot_dsl.builtins.pilang_garage import pilang_gar
+from source.pilot_dsl.builtins.pilang_run_sim import pilang_run_sim
 from structlog import get_logger
 
 log = get_logger()
@@ -24,10 +24,17 @@ class interpreter(exp_visitor, stmt_visitor):
         self.scope = self.globals
         self.locals = {}
         
-        self.globals.define('simulation', pilang_sim())
-        self.globals.define('strategy', pilang_strat())
+        #self.globals.define('simulation', pilang_sim())
         self.globals.define('car', pilang_car()) 
         self.globals.define('garages', pilang_gar())      
+        
+        self.globals.define('simulation', None)
+        methods : Dict[str, pilang_sim] = {}
+        methods['init'] = pilang_run_sim(None, self.globals, True)
+        
+        _class = pilang_sim(methods)
+        self.globals.assign(token(token_type.IDENTIFIER,'simulation',None,0), _class)
+        
     #region others_methods
     
     @staticmethod
@@ -259,7 +266,7 @@ class interpreter(exp_visitor, stmt_visitor):
         
         if stmt.initializer is not None:
             value = self.evaluate(stmt.initializer)
-        
+            
         self.scope.define(stmt.name.lexeme, value)
     
     def visit_block_stmt(self, stmt: block_stmt):

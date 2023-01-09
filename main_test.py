@@ -8,4 +8,4 @@ from source.ia.heuristics.euclidean_dist import euclidean_distance
 from source.pilot_dsl.pilang import pilang
 
 a = pilang()
-a.run_prompt()
+a.run_file('scas.txt')
