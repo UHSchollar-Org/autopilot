@@ -3,9 +3,9 @@ from source.ia.heuristics.euclidean_dist import euclidean_distance
 from source.ia.heuristics.less_time import less_time
 from source.ia.heuristics.more_profits import more_profit
 from source.pilot_dsl.errors.error import runtime_error
-from source.tools.general_tools import get_garages_loc
 from source.tools.reader import map_from_json
 from source.pilot_dsl.builtins.pilang_callable import pilang_callable
+from source.pilot_dsl.builtins.pilang_garage import pilang_gar
 from typing import List, Any
 
 class pilang_strat(pilang_callable):
@@ -34,5 +34,8 @@ class pilang_strat(pilang_callable):
                 client_selection = more_profit()
             case _:
                 raise runtime_error(arguments[1], 'Inavalid argument')
+            
+        if not isinstance(arguments[2], pilang_gar):
+            raise runtime_error(arguments[2], f'{arguments[2]} most be garages')
                 
-        return pilot(cost_func, heuristic, client_selection, _map, arguments[2])
+        return pilot(cost_func, heuristic, client_selection, _map, arguments[2].garages)

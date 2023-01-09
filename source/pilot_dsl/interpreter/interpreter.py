@@ -12,6 +12,7 @@ from source.pilot_dsl.builtins.pilang_class import pilang_class
 from source.pilot_dsl.builtins.pilang_sim import pilang_sim
 from source.pilot_dsl.builtins.pilang_strat import pilang_strat
 from source.pilot_dsl.builtins.pilang_car import pilang_car
+from source.pilot_dsl.builtins.pilang_garage import pilang_gar
 from structlog import get_logger
 
 log = get_logger()
@@ -25,7 +26,8 @@ class interpreter(exp_visitor, stmt_visitor):
         
         self.globals.define('simulation', pilang_sim())
         self.globals.define('strategy', pilang_strat())
-        self.globals.define('car', pilang_car())       
+        self.globals.define('car', pilang_car()) 
+        self.globals.define('garages', pilang_gar())      
     #region others_methods
     
     @staticmethod
