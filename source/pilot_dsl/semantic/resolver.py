@@ -147,7 +147,7 @@ class resolver(stmt_visitor, exp_visitor):
         if stmt.initializer is not None:
             self.resolve_single_exp(stmt.initializer)
         
-        self.define(stmt.name)
+            self.define(stmt.name)
     
     def visit_function_stmt(self, stmt: function_stmt):
         self.declare(stmt.name)

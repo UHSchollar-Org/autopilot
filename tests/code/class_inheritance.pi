@@ -1,0 +1,23 @@
+class Father{
+    init(name){
+        this.name = name;
+    }
+    sayName(){
+        print this.name;
+    }
+}
+
+class Child < Father{
+    init(name, iAmChild){
+        father.init(name);
+        this.iAmChild = iAmChild;
+        this.name = name + "1";
+    }
+    sayName(){
+        print this.name + "2";
+    }
+}
+var f = Father("pepe");
+var c = Child("Juanito", true);
+f.sayName();
+c.sayName();

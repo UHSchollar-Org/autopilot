@@ -1,7 +1,7 @@
 import sys
 from structlog import get_logger
 from source.pilot_dsl.interpreter.interpreter import interpreter
-from source.pilot_dsl.parser.parser_ll import parser_ll
+from source.pilot_dsl.parser.parser import parser_ll
 from source.pilot_dsl.semantic.resolver import resolver
 from source.pilot_dsl.lexer.lexer import lexer
 from source.pilot_dsl.lexer.token_ import token

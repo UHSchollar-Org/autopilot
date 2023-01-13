@@ -1,0 +1,4 @@
+var g = garages(2);
+var c = car(1,"distance","profit", g);
+var c1 = car(2, "time", "profit", g);
+var s = simulation(g, 50 , c, c1);

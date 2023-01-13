@@ -270,7 +270,7 @@ class interpreter(exp_visitor, stmt_visitor):
         self.scope.define(stmt.name.lexeme, value)
     
     def visit_block_stmt(self, stmt: block_stmt):
-        self.exec_block(self, stmt.statements, scope(self.scope))
+        self.exec_block(stmt.statements, scope(self.scope))
     
     def visit_if_stmt(self, stmt: if_stmt):
         if self.is_truthy(self.evaluate(stmt.condition)):
