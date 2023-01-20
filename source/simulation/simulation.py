@@ -18,6 +18,7 @@ class simulation:
         self.reset_cars()
         self.reset_streets()
         self.add_cars_to_map()
+        self.cd_heat_map : Dict[street, int] = {}   #client destination heat map
         
         self.next_client : client = None
         # List of clients in the sistem
@@ -120,6 +121,10 @@ class simulation:
     def client_to_system(self):
         while self.next_client.request_time <= self.current_time:
             self.clients.append(self.next_client)
+            try:
+                self.cd_heat_map[self.next_client.destination] += 1
+            except:
+                self.cd_heat_map[self.next_client.destination] = 1
             self.generate_client()
     
     def car_pickup(self, car : car):
@@ -194,6 +199,7 @@ class simulation:
         results = {
                     "cars_pickups" : self.cars_pickups, 
                     "cars_money" : self.cars_money, 
-                    "cars_manteinance" : self.cars_mantainance}
+                    "cars_manteinance" : self.cars_mantainance,
+                    "client_destination_heat_map" : self.cd_heat_map}
         
         return results
