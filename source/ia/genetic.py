@@ -3,6 +3,7 @@ from source.agents.car import car
 from source.agents.pilot import pilot
 from source.simulation.simulation import simulation
 from source.tools.reader import map_from_json
+from source.tools.general_tools import get_garages_loc
 from typing import Dict, Any, List
 from statistics import median
 from copy import deepcopy
@@ -56,6 +57,7 @@ class genetic_algorithm:
         total_pickups = []
         total_earnings = []
         total_manteinance_cost = []
+        intersections = []
         
         for _ in range(30):
             individual.reset()
@@ -64,7 +66,13 @@ class genetic_algorithm:
             total_pickups.append(sum(value for value in simulation_results["cars_pickups"].values()))
             total_earnings.append(sum(value for value in simulation_results["cars_money"].values()))
             total_manteinance_cost.append(sum(value for value in simulation_results["cars_manteinance"].values()))
+            clients_location = simulation_results["client_destination_heat_map"]
             
+            for location in clients_location.keys():
+                for _ in range(clients_location[location]):
+                    intersections.append(location)
+                    
+        individual.update_garages(get_garages_loc(deepcopy(self.sim_data["map"]), intersections, len(individual.garages)))
         
         total_pickups = median(total_pickups)
         total_earnings = median(total_earnings)

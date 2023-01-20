@@ -5,6 +5,7 @@ from source.ia.heuristics.euclidean_dist import euclidean_distance
 from source.ia.heuristics.more_profits import more_profit
 from source.environment._map import map
 from source.tools.general_tools import get_garages_loc
+from source.tools.general_tools import get_random_garages
 
 _map = map_from_json("Map")
 
@@ -14,7 +15,7 @@ sim_data = {
             "client_selection": [more_profit()],
             "garages": 2
 }
-sim_data['garages'] = get_garages_loc(_map, sim_data['garages'])
+sim_data['garages'] = get_random_garages(_map, sim_data["garages"])
 
 def main():
     print(" ")

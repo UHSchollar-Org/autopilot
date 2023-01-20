@@ -1,6 +1,7 @@
 from math import sin, cos, sqrt, atan2, radians
 from typing import List
 from source.ia.k_means import k_means
+import random
 
 import numpy as np
 
@@ -32,15 +33,23 @@ def distance_from_geo_coord(point1 : tuple, point2 : tuple)-> float:
     
     return round(6373.0 * c * 1000,1) 
 
-def get_garages_loc(_map, garages_count : int):
+def get_garages_loc(_map, intersections, garages_count : int):
     
     _k_means = k_means()
-    garages_intersections = _k_means.evaluate(_map.intersections, garages_count, 100)
+    garages_intersections = _k_means.evaluate(intersections, garages_count, 100)
     result = []
     for _intersection in garages_intersections:
         result.append(from_intersection_to_street(_map, _intersection))
     return result
 
+def get_random_garages(_map, garages_count : int):
+    result = []
+    for _ in range(garages_count):
+        rnd = random.randint(0, len(_map.streets) -1)
+        new_garage_location = _map.streets[rnd]
+        result.append(new_garage_location)
+    return result
+        
 def from_intersection_to_street(_map, garage):
     from source.environment._map import street
     

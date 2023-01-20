@@ -14,7 +14,7 @@ class simulation:
         self.map = deepcopy(map)
         self.cars_count = cars_count
         self.cars = deepcopy(cars)
-        self.garages = self.clone_garages(map, garages)
+        self.update_garages(garages)
         self.reset_cars()
         self.reset_streets()
         self.add_cars_to_map()
@@ -53,6 +53,9 @@ class simulation:
                 new_garages.append(street)
         
         return new_garages
+    
+    def update_garages(self, garages : List[street]) : 
+        self.garages = self.clone_garages(self.map, garages)
     
     def add_cars_to_map(self):
         cars_per_garage = self.cars_count // len(self.garages)
