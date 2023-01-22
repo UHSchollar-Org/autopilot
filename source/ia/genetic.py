@@ -70,7 +70,7 @@ class genetic_algorithm:
             
             for location in clients_location.keys():
                 for _ in range(clients_location[location]):
-                    intersections.append(location)
+                    intersections.append(location.intersection1)
                     
         individual.update_garages(get_garages_loc(deepcopy(self.sim_data["map"]), intersections, len(individual.garages)))
         
