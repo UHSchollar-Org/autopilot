@@ -6,6 +6,8 @@ from typing import List, Dict
 from scipy.stats import expon, lognorm
 from random import randint
 from copy import deepcopy
+from source.tools.reader import get_config_path
+import json
 
 import numpy as np
 
@@ -91,12 +93,22 @@ class simulation:
         Returns:
             street: Location that is at the given distance from the received location
         """
+        path = get_config_path() + "\\relevance_map.json"
+        with open(path, 'r') as fp:
+            relevance_map = json.load(fp)
+            
         result = None
+        best_relevance = 0
         error = np.inf
         
         for _street in self.map.streets:
             distance = distance_from_geo_coord(location.intersection1.geo_coord,_street.intersection1.geo_coord)
-            if abs(distance - _distance) < error:
+            street_relevance = relevance_map[_street.name]
+            if abs(distance - _distance) < 50:
+                if street_relevance > best_relevance:
+                    result = _street
+                    best_relevance = street_relevance
+            elif abs(distance - _distance) < error:
                 result = _street
                 error = abs(distance - _distance)
         
