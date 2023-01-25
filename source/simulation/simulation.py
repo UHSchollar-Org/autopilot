@@ -82,6 +82,29 @@ class simulation:
     def clients_in_movement(self) -> int:
         return self.pickups - self.deliveries
 
+    def select_streets_in_distance(self, location: street, distance: float) -> List[street]:
+        results = []
+        
+        for _street in self.map.streets:
+            dist = distance_from_geo_coord(location.intersection1.geo_coord,_street.intersection1.geo_coord)
+            
+            if abs(dist - distance) < 50:
+                results.append(_street)
+        
+        if len(results) == 0:
+            result = None
+            error = np.inf
+            for _street in self.map.streets:
+                dist = distance_from_geo_coord(location.intersection1.geo_coord,_street.intersection1.geo_coord)
+
+                if abs(dist - distance) < error:
+                    result = _street
+                    error = abs(dist - distance)
+                    
+            results.append(result)
+        
+        return results
+    
     def get_destination(self, location : street, _distance : float) -> street:
         """Returns a location on the map that is the given distance from the starting location. 
            Euclidean distance is used
@@ -97,20 +120,8 @@ class simulation:
         with open(path, 'r') as fp:
             relevance_map = json.load(fp)
             
-        result = None
-        best_relevance = 0
-        error = np.inf
-        
-        for _street in self.map.streets:
-            distance = distance_from_geo_coord(location.intersection1.geo_coord,_street.intersection1.geo_coord)
-            street_relevance = relevance_map[_street.name]
-            if abs(distance - _distance) < 50:
-                if street_relevance > best_relevance:
-                    result = _street
-                    best_relevance = street_relevance
-            elif abs(distance - _distance) < error:
-                result = _street
-                error = abs(distance - _distance)
+        results = self.select_streets_in_distance(location, _distance)
+        result = np.random.choice(results,size=1,p=[relevance_map[_street.name] for _street in results])
         
         return result
     
